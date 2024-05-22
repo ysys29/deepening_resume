@@ -3,30 +3,44 @@ import { prisma } from '../utils/prisma.utils.js';
 import bcrypt, { compare } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import authMiddleware from '../middlewares/auth.middleware.js';
+import joiSchemas from '../schemas/joi_schemas.js';
 
 const router = express.Router();
 
 //회원가입 api
 router.post('/sign-up', async (req, res, next) => {
-  const { email, password, verifyPassword, name, status } = req.body;
-  if (password !== verifyPassword) {
-    return res
-      .status(400)
-      .json({ errorMessage: '비밀번호 확인이 일치하지 않습니다.' });
-  }
+  try {
+    const { email, password, verifyPassword, name, role } = req.body;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = await prisma.users.create({
-    data: {
+    await joiSchemas.signupSchema.validateAsync({
       email,
-      password: hashedPassword,
+      password,
+      verifyPassword,
       name,
-      status,
-    },
-  });
+      role,
+    });
 
-  return res.status(201).json({ message: '회원가입이 완료되었습니다.' });
+    if (password !== verifyPassword) {
+      return res
+        .status(400)
+        .json({ errorMessage: '비밀번호 확인이 일치하지 않습니다.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.users.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+        role,
+      },
+    });
+
+    return res.status(201).json({ message: '회원가입이 완료되었습니다.' });
+  } catch (error) {
+    next(error);
+  }
 });
 
 //로그인 api

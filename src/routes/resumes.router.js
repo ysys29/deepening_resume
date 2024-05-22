@@ -13,7 +13,7 @@ router.post('/resumes', authMiddleware, async (req, res, next) => {
       UserId: userId,
       title,
       content,
-      status,
+      status: status.toUpperCase(),
     },
   });
   return res
