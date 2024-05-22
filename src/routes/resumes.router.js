@@ -32,13 +32,20 @@ router.post('/resumes', authMiddleware, async (req, res, next) => {
 //이력서 목록 조회 api
 router.get('/resumes', authMiddleware, async (req, res, next) => {
   try {
-    const { userId } = req.user;
-    const { sort } = req.query;
+    const { userId, role } = req.user;
+    const { sort, status } = req.query;
 
     const Sort = sort && sort.toLowerCase() === 'asc' ? 'asc' : 'desc';
 
+    //로그인 한 사람이 recruiter일 때
+    let Role = { UserId: userId };
+
+    if (role === 'RECRUITER') {
+      Role = {};
+    }
+
     const resume = await prisma.resumes.findMany({
-      where: { UserId: userId },
+      where: Role,
       select: {
         resumeId: true,
         title: true,
@@ -68,10 +75,17 @@ router.get('/resumes', authMiddleware, async (req, res, next) => {
 //이력서 상세 조회 api
 router.get('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
   try {
-    const { userId } = req.user;
+    const { userId, role } = req.user;
     const { resumeId } = req.params;
+
+    let Role = { UserId: userId, resumeId: +resumeId };
+
+    if (role === 'RECRUITER') {
+      Role = { resumeId: +resumeId };
+    }
+
     const resume = await prisma.resumes.findFirst({
-      where: { UserId: userId, resumeId: +resumeId },
+      where: Role,
       select: {
         resumeId: true,
         title: true,

@@ -1,6 +1,6 @@
 import express from 'express';
 import { prisma } from '../utils/prisma.utils.js';
-import bcrypt, { compare } from 'bcrypt';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import joiSchemas from '../schemas/joi_schemas.js';
