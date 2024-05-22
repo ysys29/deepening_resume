@@ -1,24 +1,32 @@
 import express from 'express';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import { prisma } from '../utils/prisma.utils.js';
+import joiSchemas from '../schemas/joi_schemas.js';
 
 const router = express.Router();
 
 //이력서 생성 api
 router.post('/resumes', authMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
-  const { title, content, status } = req.body;
-  const resume = await prisma.resumes.create({
-    data: {
-      UserId: userId,
-      title,
-      content,
-      status: status.toUpperCase(),
-    },
-  });
-  return res
-    .status(201)
-    .json({ messge: '이력서 생성에 성공했습니다.', data: resume });
+  try {
+    const { userId } = req.user;
+    const { title, content, status } = req.body;
+
+    await joiSchemas.postSchema.validateAsync({ title, content });
+
+    const resume = await prisma.resumes.create({
+      data: {
+        UserId: userId,
+        title,
+        content,
+        status,
+      },
+    });
+    return res
+      .status(201)
+      .json({ messge: '이력서 생성에 성공했습니다.', data: resume });
+  } catch (error) {
+    next(error);
+  }
 });
 
 //이력서 목록 조회 api
@@ -49,9 +57,7 @@ router.get('/resumes', authMiddleware, async (req, res, next) => {
       .status(200)
       .json({ message: '이력서 조회에 성공했습니다.', data: resume });
   } catch (error) {
-    return res
-      .status(400)
-      .json({ errorMessage: error.message ?? '무슨 에러람' });
+    next(error);
   }
 });
 
@@ -94,7 +100,13 @@ router.patch('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
   try {
     const { userId } = req.user;
     const { resumeId } = req.params;
-    const updateData = req.body;
+    const { title, content, status } = req.body;
+
+    if (!title && !content && !status) {
+      return res
+        .status(400)
+        .json({ errorMessage: '수정할 정보를 입력해주세요.' });
+    }
 
     const resume = await prisma.resumes.findFirst({
       where: { UserId: userId, resumeId: +resumeId },
@@ -109,7 +121,9 @@ router.patch('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
     const updatedResume = await prisma.resumes.update({
       where: { UserId: userId, resumeId: +resumeId },
       data: {
-        ...updateData,
+        title,
+        content,
+        status,
       },
     });
 

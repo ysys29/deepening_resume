@@ -15,10 +15,17 @@ const signinSchema = joi.object({
   password: joi.string().required(),
 });
 
+//이력서 생성 스키마
+const postSchema = joi.object({
+  title: joi.string().required(),
+  content: joi.string().min(150).required(),
+});
+
 //스키마 내보내기
 const joiSchemas = {
   signupSchema,
   signinSchema,
+  postSchema,
 };
 
 export default joiSchemas;
