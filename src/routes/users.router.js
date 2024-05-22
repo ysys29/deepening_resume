@@ -2,6 +2,7 @@ import express from 'express';
 import { prisma } from '../utils/prisma.utils.js';
 import bcrypt, { compare } from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import authMiddleware from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
@@ -47,7 +48,8 @@ router.post('/sign-in', async (req, res, next) => {
     {
       userId: user.userId,
     },
-    'user_secret_key'
+    'user_secret_key',
+    { expiresIn: '12h' }
   );
   res.cookie('authorization', `Bearer ${token}`);
   return res.status(200).json({ message: '로그인에 성공했습니다.' });
