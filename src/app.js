@@ -1,14 +1,17 @@
 import express from 'express';
-import errorHandlingMiddleware from './middlewares/error-handling.middleware';
+import UsersRouter from './routes/users.router.js';
+import errorHandlingMiddleware from './middlewares/error-handling.middleware.js';
 
 const app = express();
 const PORT = 3018;
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
   return res.status(200).json({ message: '안ㄴ녕' });
 });
 
-app.use('/', []);
+app.use('/', [UsersRouter]);
 app.use(errorHandlingMiddleware);
 
 app.listen(PORT, () => {
