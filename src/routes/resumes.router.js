@@ -39,14 +39,14 @@ router.get('/resumes', authMiddleware, async (req, res, next) => {
 
     //로그인 한 사람이 recruiter일 때
     let Role = { UserId: userId };
-    const Status = status ? status.toUpperCase() : null;
+    const Status = status ? { status: status.toUpperCase() } : {};
 
     if (role === 'RECRUITER') {
       Role = {};
     }
 
     const resume = await prisma.resumes.findMany({
-      where: { ...Role, status: Status },
+      where: { ...Role, ...Status },
       select: {
         resumeId: true,
         title: true,
