@@ -18,7 +18,7 @@ router.post('/resumes', authMiddleware, async (req, res, next) => {
         UserId: userId,
         title,
         content,
-        status,
+        status: status ? status.toUpperCase() : 'APPLY',
       },
     });
     return res
@@ -33,6 +33,10 @@ router.post('/resumes', authMiddleware, async (req, res, next) => {
 router.get('/resumes', authMiddleware, async (req, res, next) => {
   try {
     const { userId } = req.user;
+    const { sort } = req.query;
+
+    const Sort = sort && sort.toLowerCase() === 'asc' ? 'asc' : 'desc';
+
     const resume = await prisma.resumes.findMany({
       where: { UserId: userId },
       select: {
@@ -49,7 +53,7 @@ router.get('/resumes', authMiddleware, async (req, res, next) => {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: Sort,
       },
     });
 
@@ -153,7 +157,9 @@ router.delete('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
       where: { UserId: userId, resumeId: +resumeId },
     });
 
-    return res.status(200).json({ message: '이력서 삭제 성공' });
+    return res
+      .status(200)
+      .json({ message: '이력서 삭제 성공', data: resumeId });
   } catch (error) {
     next(error);
   }

@@ -33,7 +33,7 @@ router.post('/sign-up', async (req, res, next) => {
         email,
         password: hashedPassword,
         name,
-        role,
+        role: role ? role.toUpperCase() : 'APPLICANT',
       },
     });
 
@@ -68,6 +68,7 @@ router.post('/sign-in', async (req, res, next) => {
       'user_secret_key',
       { expiresIn: '12h' }
     );
+
     res.cookie('authorization', `Bearer ${token}`);
     return res.status(200).json({ message: '로그인에 성공했습니다.' });
   } catch (error) {
