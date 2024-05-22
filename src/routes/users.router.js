@@ -45,28 +45,34 @@ router.post('/sign-up', async (req, res, next) => {
 
 //로그인 api
 router.post('/sign-in', async (req, res, next) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await prisma.users.findFirst({ where: { email } });
-  if (!user) {
-    return res.status(401).json({ errorMessage: '존재하지 않는 이메일' });
-  }
-  let decodedPassword = await bcrypt.compare(password, user.password);
-  if (!decodedPassword) {
-    return res
-      .status(401)
-      .json({ errorMessage: '비밀번호가 일치하지 않습니다.' });
-  }
+    await joiSchemas.signinSchema.validateAsync({ email, password });
 
-  const token = jwt.sign(
-    {
-      userId: user.userId,
-    },
-    'user_secret_key',
-    { expiresIn: '12h' }
-  );
-  res.cookie('authorization', `Bearer ${token}`);
-  return res.status(200).json({ message: '로그인에 성공했습니다.' });
+    const user = await prisma.users.findFirst({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ errorMessage: '존재하지 않는 이메일' });
+    }
+    let decodedPassword = await bcrypt.compare(password, user.password);
+    if (!decodedPassword) {
+      return res
+        .status(401)
+        .json({ errorMessage: '비밀번호가 일치하지 않습니다.' });
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user.userId,
+      },
+      'user_secret_key',
+      { expiresIn: '12h' }
+    );
+    res.cookie('authorization', `Bearer ${token}`);
+    return res.status(200).json({ message: '로그인에 성공했습니다.' });
+  } catch (error) {
+    next(error);
+  }
 });
 
 //내 정보 조회 api
