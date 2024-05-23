@@ -31,5 +31,11 @@ export default function (err, req, res, next) {
   if (err.code === 'P2002') {
     return res.status(400).json({ errorMessage: '이미 가입 된 사용자입니다.' });
   }
-  res.status(500).json({ errorMessage: err.message ?? '뭔에러람' });
+  res
+    .status(500)
+    .json({
+      errorMessage:
+        err.message ??
+        '예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요.',
+    });
 }

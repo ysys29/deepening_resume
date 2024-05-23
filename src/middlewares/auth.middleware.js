@@ -6,14 +6,14 @@ export default async function (req, res, next) {
     const authorization = req.headers['authorization'];
 
     if (!authorization) {
-      return res.status(400).json({ errorMessage: '인증정보가 없습니다.' });
+      return res.status(401).json({ errorMessage: '인증정보가 없습니다.' });
     }
 
     const [TokenType, token] = authorization.split(' ');
 
     if (TokenType !== 'Bearer') {
       return res
-        .status(400)
+        .status(401)
         .json({ errorMessage: '지원하지 않는 인증 방식입니다.' });
     }
 
@@ -26,7 +26,7 @@ export default async function (req, res, next) {
 
     if (!user) {
       return res
-        .status(400)
+        .status(401)
         .json({ errorMessage: '인증 정보와 일치하는 사용자가 없습니다.' });
     }
 

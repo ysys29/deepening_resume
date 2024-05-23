@@ -171,7 +171,9 @@ router.delete('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
       where: { UserId: userId, resumeId: +resumeId },
     });
 
-    return res.status(200).json({ message: '이력서 삭제 성공', resumeId });
+    return res
+      .status(200)
+      .json({ message: '이력서 삭제에 성공했습니다.', resumeId });
   } catch (error) {
     next(error);
   }
