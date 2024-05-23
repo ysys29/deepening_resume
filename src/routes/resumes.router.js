@@ -186,22 +186,70 @@ router.patch(
   authMiddleware,
   recruiterMiddleware,
   async (req, res, next) => {
-    const { resumeId } = req.params;
-    const { status, reason } = req.body;
-    const resume = await prisma.resumes.findFirst({
-      where: { resumeId: +resumeId },
-    });
-    if (!resume) {
-      return res.status(400).json({ errorMessage: '존재하지 않는 이력서' });
-    }
+    try {
+      const { userId } = req.user;
+      const { resumeId } = req.params;
+      const { status, reason } = req.body;
+      const resume = await prisma.resumes.findFirst({
+        where: { resumeId: +resumeId },
+      });
 
-    const updatedResume = await prisma.resumes.update({
-      where: { resumeId: +resumeId },
-      data: {
-        status,
+      if (!status || !reason) {
+        return res.status(400).json({ errorMessage: '상태와 사유입렵' });
+      }
+
+      if (!resume) {
+        return res.status(400).json({ errorMessage: '존재하지 않는 이력서' });
+      }
+
+      const updatedResume = await prisma.resumes.update({
+        where: { resumeId: +resumeId },
+        data: {
+          status,
+        },
+      });
+      console.log(userId, +resumeId);
+      const resumeHistory = await prisma.resumeHistories.create({
+        data: {
+          recruiterId: userId,
+          ResumeId: +resumeId,
+          oldStatus: resume.status,
+          newStatus: status,
+          reason,
+        },
+      });
+
+      return res
+        .status(200)
+        .json({ message: '이력서 상태 변경에 성공', data: resumeHistory });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+//이력서 상태 수정 로그 조회 api
+router.get(
+  '/resumes/status/log',
+  authMiddleware,
+  recruiterMiddleware,
+  async (req, res, next) => {
+    const log = await prisma.resumeHistories.findMany({
+      select: {
+        resumeHistoryId: true,
+        User: {
+          select: {
+            name: true,
+          },
+        },
+        ResumeId: true,
+        oldStatus: true,
+        newStatus: true,
+        reason: true,
+        createdAt: true,
       },
     });
-    return res.status(200).json({ message: '이력서 상태 변경에 성공' });
+    return res.status(200).json({ log });
   }
 );
 

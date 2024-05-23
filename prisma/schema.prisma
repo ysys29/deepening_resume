@@ -24,6 +24,7 @@ model Users {
   updatedAt DateTime @updatedAt @map("updatedAt")
 
   Resumes Resumes[]
+  ResumeHistories ResumeHistories[]
 
   @@map("Users")
 }
@@ -43,6 +44,8 @@ model Resumes {
   createdAt DateTime @default(now()) @map("createdAt")
   updatedAt DateTime @updatedAt @map("updatedAt")
 
+  ResumeHistories ResumeHistories[]
+
   User Users @relation(fields: [UserId], references: [userId], onDelete: Cascade)
 
   @@map("Resumes")
@@ -55,4 +58,20 @@ enum ApplyStatus {
   INTERVIEW1
   INTERVIEW2
   FINAL_PASS
+}
+
+model ResumeHistories {
+  resumeHistoryId Int @id @default(autoincrement()) @map("resumeHistoryId")
+  recruiterId Int @map("recruiterId")
+  ResumeId Int @map("ResumeId")
+  oldStatus String @map("oldStatus")
+  newStatus String @map("newStatus")
+  reason String @map("reason")
+
+  createdAt DateTime @default(now()) @map("createdAt")
+
+  User Users @relation(fields: [recruiterId], references: [userId], onDelete: Cascade)
+  Resume Resumes @relation(fields: [ResumeId], references: [resumeId], onDelete: Cascade)
+
+  @@map("ResumeHistories")
 }
