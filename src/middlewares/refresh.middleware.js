@@ -1,36 +1,32 @@
+import dotEnv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.utils.js';
-import dotEnv from 'dotenv';
 
 dotEnv.config();
 
 export default async function (req, res, next) {
   try {
     const authorization = req.headers['authorization'];
-
     if (!authorization) {
-      return res.status(401).json({ errorMessage: '인증정보가 없습니다.' });
+      return res.status(400).json({ errorMessage: '인증 정보가 없습니다.' });
     }
-
     const [TokenType, token] = authorization.split(' ');
 
     if (TokenType !== 'Bearer') {
       return res
-        .status(401)
+        .status(400)
         .json({ errorMessage: '지원하지 않는 인증 방식입니다.' });
     }
 
-    const decodeToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY);
-    const userId = decodeToken.userId;
+    const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET_KEY);
+    console.log(payload);
 
-    const user = await prisma.users.findFirst({
-      where: { userId: userId },
+    const user = await prisma.refresh_tokens.findFirst({
+      where: { user_id: payload.userId },
     });
 
-    if (!user) {
-      return res
-        .status(401)
-        .json({ errorMessage: '인증 정보와 일치하는 사용자가 없습니다.' });
+    if (!savedToken) {
+      res.status(400).json({ errorMessage: '업슴' });
     }
 
     req.user = user;

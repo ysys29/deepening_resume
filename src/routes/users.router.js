@@ -4,6 +4,10 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import joiSchemas from '../schemas/joi_schemas.js';
+import refreshMiddleware from '../middlewares/refresh.middleware.js';
+import dotEnv from 'dotenv';
+
+dotEnv.config();
 
 const router = express.Router();
 
@@ -45,6 +49,12 @@ router.post('/sign-up', async (req, res, next) => {
   }
 });
 
+function createAccessToken(id) {
+  return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET_KEY, {
+    expiresIn: '1m',
+  });
+}
+
 //로그인 api
 router.post('/sign-in', async (req, res, next) => {
   try {
@@ -65,15 +75,23 @@ router.post('/sign-in', async (req, res, next) => {
         .json({ errorMessage: '인증 정보가 유효하지 않습니다.' });
     }
 
-    const token = jwt.sign(
-      {
-        userId: user.userId,
-      },
-      'user_secret_key',
-      { expiresIn: '12h' }
+    const accessToken = createAccessToken(user.id);
+    const refreshToken = jwt.sign(
+      { userId: user.userId },
+      process.env.REFRESH_TOKEN_SECRET_KEY,
+      { expiresIn: '10m' }
     );
 
-    return res.status(200).json({ message: '로그인에 성공했습니다.', token });
+    const tokenSave = await prisma.refresh_tokens.create({
+      data: {
+        user_id: user.userId,
+        token: refreshToken,
+      },
+    });
+
+    return res
+      .status(200)
+      .json({ message: '로그인에 성공했습니다.', accessToken, refreshToken });
   } catch (error) {
     next(error);
   }
@@ -96,6 +114,10 @@ router.get('/users', authMiddleware, async (req, res, next) => {
   });
 
   return res.status(200).json({ message: '내 정보 조회에 성공했습니다', user });
+});
+
+router.post('/token', refreshMiddleware, async (req, res, next) => {
+  const { userId } = req.user;
 });
 
 export default router;
