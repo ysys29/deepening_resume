@@ -194,13 +194,11 @@ router.patch(
         where: { resumeId: +resumeId },
       });
 
-      if (!status || !reason) {
-        return res.status(400).json({ errorMessage: '상태와 사유입렵' });
-      }
-
       if (!resume) {
         return res.status(400).json({ errorMessage: '존재하지 않는 이력서' });
       }
+
+      await joiSchemas.statusEdit.validateAsync({ status, reason });
 
       const updatedResume = await prisma.resumes.update({
         where: { resumeId: +resumeId },
@@ -247,6 +245,9 @@ router.get(
         newStatus: true,
         reason: true,
         createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
     return res.status(200).json({ log });

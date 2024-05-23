@@ -20,6 +20,10 @@ export default function (err, req, res, next) {
           return '자기소개를 입력해 주세요.';
         case '"content" length must be at least 150 characters long':
           return '자기소개는 150자 이상 작성해야 합니다.';
+        case '"status" is required':
+          return '변경하고자 하는 지원 상태를 입력해 주세요.';
+        case '"reason" is required':
+          return '지원 상태 변경 사유를 입력해 주세요';
         default:
           return err.message;
       }
@@ -31,11 +35,9 @@ export default function (err, req, res, next) {
   if (err.code === 'P2002') {
     return res.status(400).json({ errorMessage: '이미 가입 된 사용자입니다.' });
   }
-  res
-    .status(500)
-    .json({
-      errorMessage:
-        err.message ??
-        '예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요.',
-    });
+  res.status(500).json({
+    errorMessage:
+      err.message ??
+      '예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요.',
+  });
 }

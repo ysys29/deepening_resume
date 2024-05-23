@@ -25,12 +25,18 @@ const editSchema = joi.object({
   content: joi.string().min(150),
 });
 
+const statusEdit = joi.object({
+  status: joi.string().required(),
+  reason: joi.string().required(),
+});
+
 //스키마 내보내기
 const joiSchemas = {
   signupSchema,
   signinSchema,
   postSchema,
   editSchema,
+  statusEdit,
 };
 
 export default joiSchemas;
