@@ -2,6 +2,7 @@ import express from 'express';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import { prisma } from '../utils/prisma.utils.js';
 import joiSchemas from '../schemas/joi_schemas.js';
+import recruiterMiddleware from '../middlewares/recruiter.middleware.js';
 
 const router = express.Router();
 
@@ -178,5 +179,30 @@ router.delete('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
     next(error);
   }
 });
+
+//이력서 상태 수정 api
+router.patch(
+  '/resumes/:resumeId/status',
+  authMiddleware,
+  recruiterMiddleware,
+  async (req, res, next) => {
+    const { resumeId } = req.params;
+    const { status, reason } = req.body;
+    const resume = await prisma.resumes.findFirst({
+      where: { resumeId: +resumeId },
+    });
+    if (!resume) {
+      return res.status(400).json({ errorMessage: '존재하지 않는 이력서' });
+    }
+
+    const updatedResume = await prisma.resumes.update({
+      where: { resumeId: +resumeId },
+      data: {
+        status,
+      },
+    });
+    return res.status(200).json({ message: '이력서 상태 변경에 성공' });
+  }
+);
 
 export default router;
