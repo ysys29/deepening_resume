@@ -1,12 +1,35 @@
 export default function (err, req, res, next) {
   if (err.isJoi) {
-    return res.status(400).json({ errorMessage: err.message });
+    const errorMessage = err.details.map((detail) => {
+      switch (err.message) {
+        case '"email" is required':
+          return '이메일을 입력해주세요.';
+        case '"email" must be a valid email':
+          return '이메일 형식이 올바르지 않습니다.';
+        case '"password" is required':
+          return '비밀번호를 입력해 주세요';
+        case '"password" length must be at least 6 characters long':
+          return '비밀번호는 6자리 이상이어야 합니다.';
+        case '"verifyPassword" is required':
+          return '비밀번호 확인을 입력해 주세요.';
+        case '"name" is required':
+          return '이름을 입력해 주세요.';
+        case '"title" is required':
+          return '제목을 입력해 주세요.';
+        case '"content" is required':
+          return '자기소개를 입력해 주세요.';
+        case '"content" length must be at least 150 characters long':
+          return '자기소개는 150자 이상 작성해야 합니다.';
+        default:
+          return err.message;
+      }
+    });
+
+    return res.status(400).json({ errorMessage: errorMessage });
   }
 
   if (err.code === 'P2002') {
-    return res
-      .status(400)
-      .json({ errorMessage: '이미 존재하는 이메일입니다.' });
+    return res.status(400).json({ errorMessage: '이미 가입 된 사용자입니다.' });
   }
   res.status(500).json({ errorMessage: err.message ?? '뭔에러람' });
 }

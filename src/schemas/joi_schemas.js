@@ -20,11 +20,17 @@ const postSchema = joi.object({
   content: joi.string().min(150).required(),
 });
 
+//이력서 수정 스키마
+const editSchema = joi.object({
+  content: joi.string().min(150),
+});
+
 //스키마 내보내기
 const joiSchemas = {
   signupSchema,
   signinSchema,
   postSchema,
+  editSchema,
 };
 
 export default joiSchemas;

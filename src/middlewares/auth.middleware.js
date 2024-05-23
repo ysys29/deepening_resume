@@ -4,7 +4,6 @@ import { prisma } from '../utils/prisma.utils.js';
 export default async function (req, res, next) {
   try {
     const authorization = req.headers['authorization'];
-    // const { authorization } = req.cookies;
 
     if (!authorization) {
       return res.status(400).json({ errorMessage: '인증정보가 없습니다.' });
@@ -13,7 +12,9 @@ export default async function (req, res, next) {
     const [TokenType, token] = authorization.split(' ');
 
     if (TokenType !== 'Bearer') {
-      throw new Error('지원하지 않는 인증 방식입니다.');
+      return res
+        .status(400)
+        .json({ errorMessage: '지원하지 않는 인증 방식입니다.' });
     }
 
     const decodeToken = jwt.verify(token, 'user_secret_key');
@@ -24,15 +25,15 @@ export default async function (req, res, next) {
     });
 
     if (!user) {
-      res.clearCookie('authorization');
-      throw new Error('인증 정보와 일치하는 사용자가 없습니다.');
+      return res
+        .status(400)
+        .json({ errorMessage: '인증 정보와 일치하는 사용자가 없습니다.' });
     }
 
     req.user = user;
 
     next();
   } catch (error) {
-    res.clearCookie('authorization');
     switch (error.name) {
       case 'TokenExpiredError':
         return res

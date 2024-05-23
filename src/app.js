@@ -1,17 +1,15 @@
 import express from 'express';
 import UsersRouter from './routes/users.router.js';
 import ResumesRouter from './routes/resumes.router.js';
-import cookieParser from 'cookie-parser';
 import errorHandlingMiddleware from './middlewares/error-handling.middleware.js';
 
 const app = express();
 const PORT = 3018;
 
 app.use(express.json());
-app.use(cookieParser());
 
 app.get('/', (req, res) => {
-  return res.status(200).json({ message: '안ㄴ녕' });
+  return res.status(200).json({ message: 'Hello, resume_hub!' });
 });
 
 app.use('/', [UsersRouter, ResumesRouter]);

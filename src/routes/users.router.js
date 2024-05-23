@@ -22,7 +22,7 @@ router.post('/sign-up', async (req, res, next) => {
     if (password !== verifyPassword) {
       return res
         .status(400)
-        .json({ errorMessage: '비밀번호 확인이 일치하지 않습니다.' });
+        .json({ errorMessage: '입력 한 두 비밀번호가 일치하지 않습니다.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -35,7 +35,11 @@ router.post('/sign-up', async (req, res, next) => {
       },
     });
 
-    return res.status(201).json({ message: '회원가입이 완료되었습니다.' });
+    const { password: _, ...resUser } = user;
+
+    return res
+      .status(201)
+      .json({ message: '회원가입이 완료되었습니다.', user: resUser });
   } catch (error) {
     next(error);
   }
@@ -50,13 +54,15 @@ router.post('/sign-in', async (req, res, next) => {
 
     const user = await prisma.users.findFirst({ where: { email } });
     if (!user) {
-      return res.status(401).json({ errorMessage: '존재하지 않는 이메일' });
+      return res
+        .status(401)
+        .json({ errorMessage: '인증 정보가 유효하지 않습니다.' });
     }
     let decodedPassword = await bcrypt.compare(password, user.password);
     if (!decodedPassword) {
       return res
         .status(401)
-        .json({ errorMessage: '비밀번호가 일치하지 않습니다.' });
+        .json({ errorMessage: '인증 정보가 유효하지 않습니다.' });
     }
 
     const token = jwt.sign(
@@ -67,11 +73,7 @@ router.post('/sign-in', async (req, res, next) => {
       { expiresIn: '12h' }
     );
 
-    // res.cookie('authorization', `Bearer ${token}`);
-    // res.header('authorization', `Bearer ${token}`);
-    return res
-      .status(200)
-      .json({ message: '로그인에 성공했습니다.', token: token });
+    return res.status(200).json({ message: '로그인에 성공했습니다.', token });
   } catch (error) {
     next(error);
   }
@@ -93,7 +95,7 @@ router.get('/users', authMiddleware, async (req, res, next) => {
     },
   });
 
-  return res.status(200).json({ data: user });
+  return res.status(200).json({ message: '내 정보 조회에 성공했습니다', user });
 });
 
 export default router;
