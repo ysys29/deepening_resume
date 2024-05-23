@@ -3,6 +3,7 @@ import authMiddleware from '../middlewares/auth.middleware.js';
 import { prisma } from '../utils/prisma.utils.js';
 import joiSchemas from '../schemas/joi_schemas.js';
 import recruiterMiddleware from '../middlewares/recruiter.middleware.js';
+import { Prisma } from '@prisma/client';
 
 const router = express.Router();
 
@@ -200,22 +201,30 @@ router.patch(
 
       await joiSchemas.statusEdit.validateAsync({ status, reason });
 
-      const updatedResume = await prisma.resumes.update({
-        where: { resumeId: +resumeId },
-        data: {
-          status,
+      const [updatedResume, resumeHistory] = await prisma.$transaction(
+        async (tx) => {
+          const updatedResume = await tx.resumes.update({
+            where: { resumeId: +resumeId },
+            data: {
+              status,
+            },
+          });
+
+          const resumeHistory = await tx.resumeHistories.create({
+            data: {
+              recruiterId: userId,
+              ResumeId: +resumeId,
+              oldStatus: resume.status,
+              newStatus: status,
+              reason,
+            },
+          });
+          return [updatedResume, resumeHistory];
         },
-      });
-      console.log(userId, +resumeId);
-      const resumeHistory = await prisma.resumeHistories.create({
-        data: {
-          recruiterId: userId,
-          ResumeId: +resumeId,
-          oldStatus: resume.status,
-          newStatus: status,
-          reason,
-        },
-      });
+        {
+          isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
+        }
+      );
 
       return res
         .status(200)
