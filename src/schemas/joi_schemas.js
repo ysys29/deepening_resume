@@ -6,7 +6,6 @@ const signupSchema = joi.object({
   password: joi.string().min(6).required(),
   verifyPassword: joi.string().required(),
   name: joi.string().required(),
-  role: joi.string(),
 });
 
 //로그인 스키마

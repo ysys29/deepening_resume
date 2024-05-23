@@ -10,14 +10,13 @@ const router = express.Router();
 //회원가입 api
 router.post('/sign-up', async (req, res, next) => {
   try {
-    const { email, password, verifyPassword, name, role } = req.body;
+    const { email, password, verifyPassword, name } = req.body;
 
     await joiSchemas.signupSchema.validateAsync({
       email,
       password,
       verifyPassword,
       name,
-      role,
     });
 
     if (password !== verifyPassword) {
@@ -33,7 +32,6 @@ router.post('/sign-up', async (req, res, next) => {
         email,
         password: hashedPassword,
         name,
-        role: role ? role.toUpperCase() : 'APPLICANT',
       },
     });
 
@@ -69,8 +67,11 @@ router.post('/sign-in', async (req, res, next) => {
       { expiresIn: '12h' }
     );
 
-    res.cookie('authorization', `Bearer ${token}`);
-    return res.status(200).json({ message: '로그인에 성공했습니다.' });
+    // res.cookie('authorization', `Bearer ${token}`);
+    // res.header('authorization', `Bearer ${token}`);
+    return res
+      .status(200)
+      .json({ message: '로그인에 성공했습니다.', token: token });
   } catch (error) {
     next(error);
   }

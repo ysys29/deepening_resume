@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/resumes', authMiddleware, async (req, res, next) => {
   try {
     const { userId } = req.user;
-    const { title, content, status } = req.body;
+    const { title, content } = req.body;
 
     await joiSchemas.postSchema.validateAsync({ title, content });
 
@@ -18,7 +18,6 @@ router.post('/resumes', authMiddleware, async (req, res, next) => {
         UserId: userId,
         title,
         content,
-        status: status ? status.toUpperCase() : 'APPLY',
       },
     });
     return res

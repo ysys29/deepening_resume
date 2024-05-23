@@ -3,12 +3,14 @@ import { prisma } from '../utils/prisma.utils.js';
 
 export default async function (req, res, next) {
   try {
-    const { authorization } = req.cookies;
-    const [TokenType, token] = authorization.split(' ');
+    const authorization = req.headers['authorization'];
+    // const { authorization } = req.cookies;
 
     if (!authorization) {
       return res.status(400).json({ errorMessage: '인증정보가 없습니다.' });
     }
+
+    const [TokenType, token] = authorization.split(' ');
 
     if (TokenType !== 'Bearer') {
       throw new Error('지원하지 않는 인증 방식입니다.');
