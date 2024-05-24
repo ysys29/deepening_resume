@@ -78,7 +78,7 @@ model ResumeHistories {
 }
 
 model refresh_tokens {
-  refresh_tokens_id Int @id @default(autoincrement()) @map("refresh_token_id")
+  refresh_token_id Int @id @default(autoincrement()) @map("refresh_token_id")
   user_id Int @map("user_id")
   token String @map("token")
 

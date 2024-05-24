@@ -51,7 +51,13 @@ router.post('/sign-up', async (req, res, next) => {
 
 function createAccessToken(id) {
   return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET_KEY, {
-    expiresIn: '1m',
+    expiresIn: '12h',
+  });
+}
+
+function createRefreshToken(id) {
+  return jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET_KEY, {
+    expiresIn: '7d',
   });
 }
 
@@ -63,6 +69,7 @@ router.post('/sign-in', async (req, res, next) => {
     await joiSchemas.signinSchema.validateAsync({ email, password });
 
     const user = await prisma.users.findFirst({ where: { email } });
+    console.log(user);
     if (!user) {
       return res
         .status(401)
@@ -75,17 +82,15 @@ router.post('/sign-in', async (req, res, next) => {
         .json({ errorMessage: '인증 정보가 유효하지 않습니다.' });
     }
 
-    const accessToken = createAccessToken(user.id);
-    const refreshToken = jwt.sign(
-      { userId: user.userId },
-      process.env.REFRESH_TOKEN_SECRET_KEY,
-      { expiresIn: '10m' }
-    );
+    const accessToken = createAccessToken(user.userId);
+    const refreshToken = createRefreshToken(user.userId);
+
+    const hashedToken = await bcrypt.hash(refreshToken, 10);
 
     const tokenSave = await prisma.refresh_tokens.create({
       data: {
         user_id: user.userId,
-        token: refreshToken,
+        token: hashedToken,
       },
     });
 
@@ -116,8 +121,36 @@ router.get('/users', authMiddleware, async (req, res, next) => {
   return res.status(200).json({ message: '내 정보 조회에 성공했습니다', user });
 });
 
+//토큰 재발급 api
 router.post('/token', refreshMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
+  try {
+    const { user_id, refresh_token_id } = req.user;
+    const newAccessToken = createAccessToken(user_id);
+    const newRefreshToken = createRefreshToken(user_id);
+
+    const hashedToken = await bcrypt.hash(newRefreshToken, 10);
+
+    await prisma.refresh_tokens.update({
+      where: { refresh_token_id },
+      data: {
+        token: hashedToken,
+      },
+    });
+    return res.status(200).json({ newAccessToken, newRefreshToken });
+  } catch (error) {
+    next(error);
+  }
+});
+
+//로그아웃 api
+router.delete('/token', refreshMiddleware, async (req, res, next) => {
+  try {
+    const { user_id } = req.user;
+    await prisma.refresh_tokens.deleteMany({ where: { user_id } });
+    return res.status(200).json({ message: '로그아웃완료' });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;
