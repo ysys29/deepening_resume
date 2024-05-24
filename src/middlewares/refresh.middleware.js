@@ -34,7 +34,6 @@ export default async function (req, res, next) {
       where: { user_id: payload.user_id },
       orderBy: { refresh_token_id: 'desc' },
     });
-    console.log(user);
 
     if (!user) {
       return res
@@ -43,7 +42,6 @@ export default async function (req, res, next) {
     }
 
     const validToken = await bcrypt.compare(token, user.token);
-    console.log(validToken);
 
     if (!validToken) {
       return res.status(401).json({ errorMessage: '폐기 된 인증 정보입니다.' });

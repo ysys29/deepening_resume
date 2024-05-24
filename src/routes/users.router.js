@@ -70,7 +70,6 @@ router.post('/sign-in', async (req, res, next) => {
     await joiSchemas.signinSchema.validateAsync({ email, password });
 
     const user = await prisma.users.findFirst({ where: { email } });
-    console.log(user);
     if (!user) {
       return res
         .status(401)
@@ -87,8 +86,6 @@ router.post('/sign-in', async (req, res, next) => {
     const refreshToken = createRefreshToken(user.userId);
 
     const hashedToken = await bcrypt.hash(refreshToken, 10);
-
-    console.log(hashedToken);
 
     const tokenSave = await prisma.refresh_tokens.create({
       data: {
