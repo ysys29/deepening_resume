@@ -24,6 +24,8 @@ export default function (err, req, res, next) {
           return '변경하고자 하는 지원 상태를 입력해 주세요.';
         case '"reason" is required':
           return '지원 상태 변경 사유를 입력해 주세요';
+        case '"status" must be one of [APPLY, DROP, PASS, INTERVIEW1, INTERVIEW2, FINAL_PASS]':
+          return '유효하지 않은 지원 상태입니다.';
         default:
           return err.message;
       }

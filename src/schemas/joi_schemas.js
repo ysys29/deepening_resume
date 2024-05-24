@@ -25,8 +25,13 @@ const editSchema = joi.object({
   content: joi.string().min(150),
 });
 
+//이력서 상태 변경 스키마
 const statusEdit = joi.object({
-  status: joi.string().required(),
+  status: joi
+    .string()
+    .uppercase()
+    .required()
+    .valid('APPLY', 'DROP', 'PASS', 'INTERVIEW1', 'INTERVIEW2', 'FINAL_PASS'),
   reason: joi.string().required(),
 });
 

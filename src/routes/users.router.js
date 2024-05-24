@@ -49,12 +49,13 @@ router.post('/sign-up', async (req, res, next) => {
   }
 });
 
+//엑세스 토큰 발급 함수
 function createAccessToken(id) {
   return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET_KEY, {
     expiresIn: '12h',
   });
 }
-
+//리프레시 토큰 발급 함수
 function createRefreshToken(id) {
   return jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET_KEY, {
     expiresIn: '7d',
@@ -147,7 +148,7 @@ router.delete('/token', refreshMiddleware, async (req, res, next) => {
   try {
     const { user_id } = req.user;
     await prisma.refresh_tokens.deleteMany({ where: { user_id } });
-    return res.status(200).json({ message: '로그아웃완료' });
+    return res.status(200).json({ user_id });
   } catch (error) {
     next(error);
   }

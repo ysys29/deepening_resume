@@ -13,6 +13,7 @@ export default async function (req, res, next) {
     }
 
     const [TokenType, token] = authorization.split(' ');
+    console.log(token);
 
     if (TokenType !== 'Bearer') {
       return res
@@ -21,7 +22,7 @@ export default async function (req, res, next) {
     }
 
     const decodeToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY);
-    const userId = decodeToken.userId;
+    const userId = decodeToken.id;
 
     const user = await prisma.users.findFirst({
       where: { userId: userId },

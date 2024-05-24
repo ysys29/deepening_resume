@@ -206,7 +206,7 @@ router.patch(
           const updatedResume = await tx.resumes.update({
             where: { resumeId: +resumeId },
             data: {
-              status,
+              status: status.toUpperCase(),
             },
           });
 
@@ -215,7 +215,7 @@ router.patch(
               recruiterId: userId,
               ResumeId: +resumeId,
               oldStatus: resume.status,
-              newStatus: status,
+              newStatus: status.toUpperCase(),
               reason,
             },
           });
