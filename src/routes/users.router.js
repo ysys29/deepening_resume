@@ -50,14 +50,14 @@ router.post('/sign-up', async (req, res, next) => {
 });
 
 //엑세스 토큰 발급 함수
-function createAccessToken(id) {
-  return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET_KEY, {
+function createAccessToken(user_id) {
+  return jwt.sign({ user_id }, process.env.ACCESS_TOKEN_SECRET_KEY, {
     expiresIn: '12h',
   });
 }
 //리프레시 토큰 발급 함수
-function createRefreshToken(id) {
-  return jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET_KEY, {
+function createRefreshToken(user_id) {
+  return jwt.sign({ user_id }, process.env.REFRESH_TOKEN_SECRET_KEY, {
     expiresIn: '7d',
   });
 }
@@ -76,7 +76,7 @@ router.post('/sign-in', async (req, res, next) => {
         .status(401)
         .json({ errorMessage: '인증 정보가 유효하지 않습니다.' });
     }
-    let decodedPassword = await bcrypt.compare(password, user.password);
+    const decodedPassword = await bcrypt.compare(password, user.password);
     if (!decodedPassword) {
       return res
         .status(401)
@@ -87,6 +87,8 @@ router.post('/sign-in', async (req, res, next) => {
     const refreshToken = createRefreshToken(user.userId);
 
     const hashedToken = await bcrypt.hash(refreshToken, 10);
+
+    console.log(hashedToken);
 
     const tokenSave = await prisma.refresh_tokens.create({
       data: {
