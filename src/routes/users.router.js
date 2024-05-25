@@ -82,17 +82,34 @@ router.post('/sign-in', async (req, res, next) => {
         .json({ errorMessage: '인증 정보가 유효하지 않습니다.' });
     }
 
+    //엑세스 토큰 발급
     const accessToken = createAccessToken(user.userId);
+    //리프레시 토큰 발급
     const refreshToken = createRefreshToken(user.userId);
 
+    //리프레시 토큰 암호화
     const hashedToken = await bcrypt.hash(refreshToken, 10);
 
-    const tokenSave = await prisma.refresh_tokens.create({
-      data: {
-        user_id: user.userId,
-        token: hashedToken,
-      },
+    //여기서 저장소에 해당 아이디의 토큰이 있는지 확인
+    const savedToken = await prisma.refresh_tokens.findFirst({
+      where: { user_id: user.userId },
     });
+
+    //없으면 토큰 생성, 있으면 토큰 업데이트
+    if (!savedToken) {
+      await prisma.refresh_tokens.create({
+        data: {
+          user_id: user.userId,
+          token: hashedToken,
+        },
+      });
+    } else {
+      await prisma.refresh_tokens.update({
+        where: { user_id: user.userId },
+        data: { token: hashedToken },
+      });
+    }
+    console.log(savedToken);
 
     return res
       .status(200)

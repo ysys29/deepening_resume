@@ -32,7 +32,6 @@ export default async function (req, res, next) {
 
     const user = await prisma.refresh_tokens.findFirst({
       where: { user_id: payload.user_id },
-      orderBy: { refresh_token_id: 'desc' },
     });
 
     if (!user) {

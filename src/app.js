@@ -1,10 +1,10 @@
-import dotEnv from 'dotenv';
+// import dotEnv from 'dotenv';
 import express from 'express';
 import UsersRouter from './routes/users.router.js';
 import ResumesRouter from './routes/resumes.router.js';
 import errorHandlingMiddleware from './middlewares/error-handling.middleware.js';
 
-dotEnv.config();
+// dotEnv.config();
 
 const app = express();
 const PORT = 3018;

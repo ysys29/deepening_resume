@@ -25,7 +25,7 @@ model Users {
 
   Resumes Resumes[]
   ResumeHistories ResumeHistories[]
-  refresh_tokens refresh_tokens[]
+  refresh_tokens refresh_tokens?
 
   @@map("Users")
 }
@@ -79,7 +79,7 @@ model ResumeHistories {
 
 model refresh_tokens {
   refresh_token_id Int @id @default(autoincrement()) @map("refresh_token_id")
-  user_id Int @map("user_id")
+  user_id Int @unique @map("user_id")
   token String @map("token")
 
   user Users @relation(fields: [user_id], references: [userId], onDelete: Cascade)
