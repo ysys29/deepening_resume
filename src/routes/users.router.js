@@ -6,6 +6,11 @@ import authMiddleware from '../middlewares/auth.middleware.js';
 import joiSchemas from '../schemas/joi_schemas.js';
 import refreshMiddleware from '../middlewares/refresh.middleware.js';
 import dotEnv from 'dotenv';
+import { HASH } from '../constants/hash.constant.js';
+import {
+  ACCESS_TOKEN_SECRET_KEY,
+  REFRESH_TOKEN_SECRET_KEY,
+} from '../constants/env.constant.js';
 
 dotEnv.config();
 
@@ -29,7 +34,7 @@ router.post('/sign-up', async (req, res, next) => {
         .json({ errorMessage: '입력 한 두 비밀번호가 일치하지 않습니다.' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, HASH);
 
     const user = await prisma.users.create({
       data: {
@@ -51,13 +56,13 @@ router.post('/sign-up', async (req, res, next) => {
 
 //엑세스 토큰 발급 함수
 function createAccessToken(user_id) {
-  return jwt.sign({ user_id }, process.env.ACCESS_TOKEN_SECRET_KEY, {
+  return jwt.sign({ user_id }, ACCESS_TOKEN_SECRET_KEY, {
     expiresIn: '12h',
   });
 }
 //리프레시 토큰 발급 함수
 function createRefreshToken(user_id) {
-  return jwt.sign({ user_id }, process.env.REFRESH_TOKEN_SECRET_KEY, {
+  return jwt.sign({ user_id }, REFRESH_TOKEN_SECRET_KEY, {
     expiresIn: '7d',
   });
 }
@@ -88,7 +93,7 @@ router.post('/sign-in', async (req, res, next) => {
     const refreshToken = createRefreshToken(user.user_id);
 
     //리프레시 토큰 암호화
-    const hashedToken = await bcrypt.hash(refreshToken, 10);
+    const hashedToken = await bcrypt.hash(refreshToken, HASH);
 
     //여기서 저장소에 해당 아이디의 토큰이 있는지 확인
     const savedToken = await prisma.refresh_tokens.findFirst({

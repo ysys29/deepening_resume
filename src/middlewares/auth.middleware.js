@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.utils.js';
 import dotEnv from 'dotenv';
+import { ACCESS_TOKEN_SECRET_KEY } from '../constants/env.constant.js';
 
 dotEnv.config();
 
@@ -20,7 +21,7 @@ export default async function (req, res, next) {
         .json({ errorMessage: '지원하지 않는 인증 방식입니다.' });
     }
 
-    const decodeToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY);
+    const decodeToken = jwt.verify(token, ACCESS_TOKEN_SECRET_KEY);
     const user_id = decodeToken.user_id;
 
     const user = await prisma.users.findFirst({

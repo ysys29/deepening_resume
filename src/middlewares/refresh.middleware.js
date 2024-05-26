@@ -2,6 +2,7 @@ import dotEnv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.utils.js';
 import bcrypt from 'bcrypt';
+import { REFRESH_TOKEN_SECRET_KEY } from '../constants/env.constant.js';
 
 dotEnv.config();
 
@@ -22,7 +23,7 @@ export default async function (req, res, next) {
     }
 
     //가져온 토큰
-    const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET_KEY);
+    const payload = jwt.verify(token, REFRESH_TOKEN_SECRET_KEY);
     if (!payload) {
       return res
         .status(401)
