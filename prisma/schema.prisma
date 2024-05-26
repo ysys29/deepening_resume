@@ -13,21 +13,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  userId Int @id @default(autoincrement()) @map("userId")
+model users {
+  user_id Int @id @default(autoincrement()) @map("user_id")
   email String @unique @map("email")
   password String @map("password")
   name String @map("name")
   role UserRole @default(APPLICANT) @map("role")
 
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @updatedAt @map("updated_at")
 
-  Resumes Resumes[]
-  ResumeHistories ResumeHistories[]
+  resumes resumes[]
+  resume_histories resume_histories[]
   refresh_tokens refresh_tokens?
 
-  @@map("Users")
+  @@map("users")
 }
 
 enum UserRole {
@@ -35,21 +35,21 @@ enum UserRole {
   RECRUITER
 }
 
-model Resumes {
-  resumeId Int @id @default(autoincrement()) @map("resumeId")
-  UserId Int @map("UserId")
+model resumes {
+  resume_id Int @id @default(autoincrement()) @map("resume_id")
+  user_id Int @map("user_id")
   title String @map("title")
   content String @db.Text @map("content")
   status ApplyStatus @default(APPLY) @map("status")
 
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @updatedAt @map("updated_at")
 
-  ResumeHistories ResumeHistories[]
+  resume_histories resume_histories[]
 
-  User Users @relation(fields: [UserId], references: [userId], onDelete: Cascade)
+  user users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
-  @@map("Resumes")
+  @@map("resumes")
 }
 
 enum ApplyStatus {
@@ -61,20 +61,20 @@ enum ApplyStatus {
   FINAL_PASS
 }
 
-model ResumeHistories {
-  resumeHistoryId Int @id @default(autoincrement()) @map("resumeHistoryId")
-  recruiterId Int @map("recruiterId")
-  ResumeId Int @map("ResumeId")
-  oldStatus String @map("oldStatus")
-  newStatus String @map("newStatus")
+model resume_histories {
+  resume_history_id Int @id @default(autoincrement()) @map("resume_history_id")
+  recruiter_id Int @map("recruiter_id")
+  resume_id Int @map("resume_id")
+  old_status String @map("old_status")
+  new_status String @map("new_status")
   reason String @map("reason")
 
-  createdAt DateTime @default(now()) @map("createdAt")
+  created_at DateTime @default(now()) @map("created_at")
 
-  User Users @relation(fields: [recruiterId], references: [userId], onDelete: Cascade)
-  Resume Resumes @relation(fields: [ResumeId], references: [resumeId], onDelete: Cascade)
+  user users @relation(fields: [recruiter_id], references: [user_id], onDelete: Cascade)
+  Resume resumes @relation(fields: [resume_id], references: [resume_id], onDelete: Cascade)
 
-  @@map("ResumeHistories")
+  @@map("resume_histories")
 }
 
 model refresh_tokens {
@@ -82,5 +82,7 @@ model refresh_tokens {
   user_id Int @unique @map("user_id")
   token String @map("token")
 
-  user Users @relation(fields: [user_id], references: [userId], onDelete: Cascade)
+  user users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
 }

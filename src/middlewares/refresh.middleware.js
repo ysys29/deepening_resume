@@ -23,7 +23,6 @@ export default async function (req, res, next) {
 
     //가져온 토큰
     const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET_KEY);
-
     if (!payload) {
       return res
         .status(401)
