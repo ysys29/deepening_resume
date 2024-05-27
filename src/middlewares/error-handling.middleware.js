@@ -1,4 +1,5 @@
 export default function (err, req, res, next) {
+  //joi 에러
   if (err.isJoi) {
     const errorMessage = err.details.map((detail) => {
       switch (err.message) {
@@ -34,9 +35,25 @@ export default function (err, req, res, next) {
     return res.status(400).json({ errorMessage: errorMessage });
   }
 
+  //jwt 에러
+  if (err.name === 'TokenExpiredError') {
+    return res
+      .status(401)
+      .json({ errorMessage: '인증 정보가 만료되었습니다.' });
+  }
+
+  if (err.name === 'JsonWebTokenError') {
+    return res
+      .status(401)
+      .json({ errorMessage: '인증 정보가 유효하지 않습니다.' });
+  }
+
+  //이메일 중복 에러
   if (err.code === 'P2002') {
     return res.status(400).json({ errorMessage: '이미 가입 된 사용자입니다.' });
   }
+
+  //기타 에러
   res.status(500).json({
     errorMessage:
       err.message ??

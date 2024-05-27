@@ -1,13 +1,14 @@
-// import dotEnv from 'dotenv';
+import dotEnv from 'dotenv';
 import express from 'express';
 import UsersRouter from './routes/users.router.js';
 import ResumesRouter from './routes/resumes.router.js';
 import errorHandlingMiddleware from './middlewares/error-handling.middleware.js';
+import { SERVER_PORT } from './constants/env.constant.js';
 
-// dotEnv.config();
+dotEnv.config();
 
 const app = express();
-const PORT = 3018;
+const PORT = SERVER_PORT;
 
 app.use(express.json());
 
