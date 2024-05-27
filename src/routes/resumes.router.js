@@ -99,9 +99,7 @@ router.get('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
     });
 
     if (!resume) {
-      return res
-        .status(400)
-        .json({ errorMessage: '이력서가 존재하지 않습니다.' });
+      throw new Error('이력서가 존재하지 않습니다.');
     }
 
     return res
@@ -124,9 +122,7 @@ router.patch('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
     });
 
     if (!resume) {
-      return res
-        .status(400)
-        .json({ errorMessage: '이력서가 존재하지 않습니다.' });
+      throw new Error('이력서가 존재하지 않습니다.');
     }
 
     if (!title && !content) {
@@ -164,9 +160,7 @@ router.delete('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
     });
 
     if (!resume) {
-      return res
-        .status(400)
-        .json({ errorMessage: '이력서가 존재하지 않습니다.' });
+      throw new Error('이력서가 존재하지 않습니다.');
     }
 
     await prisma.resumes.delete({
@@ -196,7 +190,7 @@ router.patch(
       });
 
       if (!resume) {
-        return res.status(400).json({ errorMessage: '존재하지 않는 이력서' });
+        throw new Error('이력서가 존재하지 않습니다.');
       }
 
       await joiSchemas.statusEdit.validateAsync({ status, reason });
@@ -228,7 +222,10 @@ router.patch(
 
       return res
         .status(200)
-        .json({ message: '이력서 상태 변경에 성공', data: resumeHistory });
+        .json({
+          message: '이력서 상태 변경에 성공해습니다.',
+          data: resumeHistory,
+        });
     } catch (error) {
       next(error);
     }
