@@ -5,14 +5,12 @@ import jwt from 'jsonwebtoken';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import joiSchemas from '../schemas/joi_schemas.js';
 import refreshMiddleware from '../middlewares/refresh.middleware.js';
-import dotEnv from 'dotenv';
+import 'dotenv/config';
 import { HASH } from '../constants/hash.constant.js';
 import {
   ACCESS_TOKEN_SECRET_KEY,
   REFRESH_TOKEN_SECRET_KEY,
 } from '../constants/env.constant.js';
-
-dotEnv.config();
 
 const router = express.Router();
 

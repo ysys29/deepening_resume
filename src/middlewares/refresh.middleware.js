@@ -1,11 +1,9 @@
-import dotEnv from 'dotenv';
+import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.utils.js';
 import bcrypt from 'bcrypt';
 import { REFRESH_TOKEN_SECRET_KEY } from '../constants/env.constant.js';
 import JwtError from '../constants/error.constant.js';
-
-dotEnv.config();
 
 export default async function (req, res, next) {
   try {
