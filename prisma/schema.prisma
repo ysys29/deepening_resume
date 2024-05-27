@@ -82,6 +82,8 @@ model refresh_tokens {
   user_id Int @unique @map("user_id")
   token String @map("token")
 
+  created_at DateTime @default(now()) @map("created_at")
+
   user users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
   @@map("refresh_tokens")

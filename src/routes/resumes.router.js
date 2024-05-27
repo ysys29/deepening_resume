@@ -220,12 +220,10 @@ router.patch(
         }
       );
 
-      return res
-        .status(200)
-        .json({
-          message: '이력서 상태 변경에 성공해습니다.',
-          data: resumeHistory,
-        });
+      return res.status(200).json({
+        message: '이력서 상태 변경에 성공했습니다.',
+        data: resumeHistory,
+      });
     } catch (error) {
       next(error);
     }
