@@ -102,9 +102,7 @@ router.get('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
       throw new Error('이력서가 존재하지 않습니다.');
     }
 
-    return res
-      .status(200)
-      .json({ message: '이력서 상세 조회 성공', data: resume });
+    return res.status(200).json({ message: '이력서 상세 조회 성공', resume });
   } catch (error) {
     next(error);
   }
@@ -220,7 +218,7 @@ router.patch(
         }
       );
 
-      return res.status(200).json({
+      return res.status(201).json({
         message: '이력서 상태 변경에 성공했습니다.',
         data: resumeHistory,
       });
@@ -254,7 +252,9 @@ router.get(
         created_at: 'desc',
       },
     });
-    return res.status(200).json({ log });
+    return res
+      .status(200)
+      .json({ message: '이력서 로그 조회에 성공했습니다.', log });
   }
 );
 

@@ -169,7 +169,9 @@ router.delete('/token', refreshMiddleware, async (req, res, next) => {
   try {
     const { user_id } = req.user;
     await prisma.refresh_tokens.delete({ where: { user_id } });
-    return res.status(200).json({ user_id });
+    return res
+      .status(200)
+      .json({ message: '로그아웃을 완료했습니다.', user_id });
   } catch (error) {
     next(error);
   }

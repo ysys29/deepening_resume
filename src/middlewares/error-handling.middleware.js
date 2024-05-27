@@ -1,3 +1,5 @@
+import JwtError from '../constants/error.constant.js';
+
 export default function (err, req, res, next) {
   //joi 에러
   if (err.isJoi) {
@@ -48,24 +50,8 @@ export default function (err, req, res, next) {
       .json({ errorMessage: '인증 정보가 유효하지 않습니다.' });
   }
 
-  if (err.message === '인증 정보가 없습니다.') {
-    return res.status(401).json({ errorMessage: '인증 정보가 없습니다.' });
-  }
-
-  if (err.message === '지원하지 않는 인증 방식입니다.') {
-    return res
-      .status(401)
-      .json({ errorMessage: '지원하지 않는 인증 방식입니다.' });
-  }
-
-  if (err.message === '인증 정보와 일치하는 사용자가 없습니다.') {
-    return res
-      .status(401)
-      .json({ errorMessage: '인증 정보와 일치하는 사용자가 없습니다.' });
-  }
-
-  if (err.message === '폐기 된 인증 정보입니다.') {
-    return res.status(401).json({ errorMessage: '폐기 된 인증 정보입니다.' });
+  if (err instanceof JwtError) {
+    return res.status(err.statusCode).json({ errorMessage: err.message });
   }
 
   //이메일 중복 에러
