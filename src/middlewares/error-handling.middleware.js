@@ -67,7 +67,7 @@ export default function (err, req, res, next) {
   }
 
   //기타 에러
-  res.status(500).json({
+  return res.status(500).json({
     errorMessage:
       err.message ??
       '예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요.',
