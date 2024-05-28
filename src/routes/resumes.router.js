@@ -36,14 +36,14 @@ router.get('/resumes', authMiddleware, async (req, res, next) => {
     const { user_id, role } = req.user;
     const { sort, status } = req.query;
 
-    const Sort = sort && sort.toLowerCase() === 'asc' ? 'asc' : 'desc';
-    const Status = status ? { status: status.toUpperCase() } : {};
+    const querySort = sort && sort.toLowerCase() === 'asc' ? 'asc' : 'desc';
+    const queryStatus = status ? { status: status.toUpperCase() } : {};
 
     //로그인 한 사람이 recruiter일 때
-    const Role = role !== 'RECRUITER' ? { user_id } : {};
+    const userRole = role !== 'RECRUITER' ? { user_id } : {};
 
     const resume = await prisma.resumes.findMany({
-      where: { ...Role, ...Status },
+      where: { ...userRole, ...queryStatus },
       select: {
         resume_id: true,
         user: {
@@ -58,7 +58,7 @@ router.get('/resumes', authMiddleware, async (req, res, next) => {
         updated_at: true,
       },
       orderBy: {
-        created_at: Sort,
+        created_at: querySort,
       },
     });
 
@@ -76,13 +76,13 @@ router.get('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
     const { user_id, role } = req.user;
     const { resume_id } = req.params;
 
-    const Role =
+    const userRole =
       role !== 'RECRUITER'
         ? { user_id, resume_id: +resume_id }
         : { resume_id: +resume_id };
 
     const resume = await prisma.resumes.findFirst({
-      where: Role,
+      where: userRole,
       select: {
         resume_id: true,
         user: {

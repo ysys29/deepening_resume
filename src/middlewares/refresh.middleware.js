@@ -22,21 +22,21 @@ export default async function (req, res, next) {
     //가져온 토큰
     const payload = jwt.verify(token, REFRESH_TOKEN_SECRET_KEY);
 
-    const user = await prisma.refresh_tokens.findFirst({
+    const tokenInfo = await prisma.refresh_tokens.findFirst({
       where: { user_id: payload.user_id },
     });
 
-    if (!user) {
+    if (!tokenInfo) {
       throw new JwtError('인증 정보와 일치하는 사용자가 없습니다.');
     }
 
-    const validToken = await bcrypt.compare(token, user.token);
+    const validToken = await bcrypt.compare(token, tokenInfo.token);
 
     if (!validToken) {
       throw new JwtError('폐기 된 인증 정보입니다.');
     }
 
-    req.user = user;
+    req.user = tokenInfo;
 
     next();
   } catch (error) {
