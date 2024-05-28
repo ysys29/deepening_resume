@@ -40,7 +40,7 @@ router.get('/resumes', authMiddleware, async (req, res, next) => {
     const Status = status ? { status: status.toUpperCase() } : {};
 
     //로그인 한 사람이 recruiter일 때
-    let Role = role !== 'RECRUITER' ? { user_id } : {};
+    const Role = role !== 'RECRUITER' ? { user_id } : {};
 
     const resume = await prisma.resumes.findMany({
       where: { ...Role, ...Status },
@@ -76,7 +76,7 @@ router.get('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
     const { user_id, role } = req.user;
     const { resume_id } = req.params;
 
-    let Role =
+    const Role =
       role !== 'RECRUITER'
         ? { user_id, resume_id: +resume_id }
         : { resume_id: +resume_id };
