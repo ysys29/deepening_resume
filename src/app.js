@@ -4,9 +4,12 @@ import UsersRouter from './routes/users.router.js';
 import ResumesRouter from './routes/resumes.router.js';
 import errorHandlingMiddleware from './middlewares/error-handling.middleware.js';
 import { SERVER_PORT } from './constants/env.constant.js';
+import checkEnv from './utils/checkEnv.js';
 
 const app = express();
 const PORT = SERVER_PORT;
+
+checkEnv();
 
 app.use(express.json());
 

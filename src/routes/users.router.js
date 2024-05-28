@@ -95,7 +95,6 @@ router.post('/sign-in', async (req, res, next) => {
         data: { token: hashedToken },
       });
     }
-    console.log(savedToken);
 
     return res
       .status(200)
