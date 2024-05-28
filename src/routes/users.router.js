@@ -1,16 +1,12 @@
 import express from 'express';
 import { prisma } from '../utils/prisma.utils.js';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import joiSchemas from '../schemas/joi_schemas.js';
 import refreshMiddleware from '../middlewares/refresh.middleware.js';
 import 'dotenv/config';
 import { saltHash } from '../constants/hash.constant.js';
-import {
-  ACCESS_TOKEN_SECRET_KEY,
-  REFRESH_TOKEN_SECRET_KEY,
-} from '../constants/env.constant.js';
+import { createAccessToken, createRefreshToken } from '../utils/tokens.js';
 
 const router = express.Router();
 
@@ -51,19 +47,6 @@ router.post('/sign-up', async (req, res, next) => {
     next(error);
   }
 });
-
-//엑세스 토큰 발급 함수
-function createAccessToken(user_id) {
-  return jwt.sign({ user_id }, ACCESS_TOKEN_SECRET_KEY, {
-    expiresIn: '12h',
-  });
-}
-//리프레시 토큰 발급 함수
-function createRefreshToken(user_id) {
-  return jwt.sign({ user_id }, REFRESH_TOKEN_SECRET_KEY, {
-    expiresIn: '7d',
-  });
-}
 
 //로그인 api
 router.post('/sign-in', async (req, res, next) => {
