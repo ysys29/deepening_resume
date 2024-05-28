@@ -9,7 +9,7 @@ export default async function (req, res, next) {
   try {
     const authorization = req.headers['authorization'];
     if (!authorization) {
-      throw new jwtError(401, '인증 정보가 없습니다.');
+      throw new JwtError(401, '인증 정보가 없습니다.');
     }
 
     //일단 리프레시 토큰 가져와서 분리하기
