@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import {
   ACCESS_TOKEN_SECRET_KEY,
   REFRESH_TOKEN_SECRET_KEY,
-} from '../constants/env.constant';
+} from '../constants/env.constant.js';
 
 //엑세스 토큰 발급 함수
 export function createAccessToken(user_id) {
