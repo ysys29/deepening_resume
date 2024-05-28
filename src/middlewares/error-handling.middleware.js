@@ -1,4 +1,4 @@
-import JwtError from '../constants/error.constant.js';
+import JwtError from '../errors/jwt.error.js';
 
 export default function (err, req, res, next) {
   //joi 에러
