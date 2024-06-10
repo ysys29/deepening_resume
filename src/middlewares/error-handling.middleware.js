@@ -25,6 +25,10 @@ export default function (err, req, res, next) {
     return res.status(err.status).json({ errorMessage: err.message });
   }
 
+  if (err instanceof HttpError.Forbidden) {
+    return res.status(err.status).json({ errorMessage: err.message });
+  }
+
   if (err.code === 'P2002') {
     //이메일 중복 에러
     return res.status(400).json({ errorMessage: '이미 가입 된 사용자입니다.' });

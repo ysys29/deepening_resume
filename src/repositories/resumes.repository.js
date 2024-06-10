@@ -12,4 +12,18 @@ export class ResumesRepository {
 
     return resume;
   };
+
+  findResume = async (resumeId) => {
+    const resume = await prisma.resumes.findUnique({ where: { resumeId } });
+
+    return resume;
+  };
+
+  updateResume = async (resumeId, title, content) => {
+    const updatedResume = await prisma.resumes.update({
+      where: { resumeId },
+      data: { title, content },
+    });
+    return updatedResume;
+  };
 }
