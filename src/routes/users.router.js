@@ -7,8 +7,10 @@ import { saltHash } from '../constants/hash.constant.js';
 import { createAccessToken, createRefreshToken } from '../utils/tokens.js';
 import { signUpValidator } from '../middlewares/validators/signUp-validator.middleware.js';
 import { signInValidator } from '../middlewares/validators/signIn-validator.middleware.js';
+import { UsersController } from '../controllers/users.controller.js';
 
 const router = express.Router();
+const usersController = new UsersController();
 
 //회원가입 api
 router.post('/sign-up', signUpValidator, async (req, res, next) => {
@@ -96,23 +98,7 @@ router.post('/sign-in', signInValidator, async (req, res, next) => {
 });
 
 //내 정보 조회 api
-router.get('/users', authMiddleware, async (req, res, next) => {
-  const { userId } = req.user;
-
-  const user = await prisma.users.findFirst({
-    where: { userId },
-    select: {
-      userId: true,
-      email: true,
-      name: true,
-      role: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-
-  return res.status(200).json({ message: '내 정보 조회에 성공했습니다', user });
-});
+router.get('/users', authMiddleware, usersController.getUserById);
 
 //토큰 재발급 api
 router.post('/token', refreshMiddleware, async (req, res, next) => {
