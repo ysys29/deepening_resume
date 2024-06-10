@@ -1,4 +1,3 @@
-import JwtError from '../errors/jwt.error.js';
 import { HttpError } from '../errors/http.error.js';
 
 export default function (err, req, res, next) {
@@ -20,10 +19,6 @@ export default function (err, req, res, next) {
     return res
       .status(401)
       .json({ errorMessage: '인증 정보가 유효하지 않습니다.' });
-  }
-
-  if (err instanceof JwtError) {
-    return res.status(err.statusCode).json({ errorMessage: err.message });
   }
 
   if (err instanceof HttpError.Unauthorized) {
