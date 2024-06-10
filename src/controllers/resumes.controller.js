@@ -43,21 +43,25 @@ export class ResumesController {
     }
   };
 
-  //   //이력서 상세 조회
-  //   findPost = async (req, res, next) => {
-  //     try {
-  //       const { userId, role } = req.user;
-  //       const resumeId = +req.params.resumeId;
+  //이력서 상세 조회
+  findResume = async (req, res, next) => {
+    try {
+      const { userId, role } = req.user;
+      const resumeId = +req.params.resumeId;
 
-  //       const resume = await this.resumesService.findResume(resumeId);
+      const resume = await this.resumesService.findResume(
+        userId,
+        role,
+        resumeId
+      );
 
-  //       return res
-  //         .status(HTTP_STATUS.OK)
-  //         .json({ message: `${resumeId}번 이력서`, data: resume });
-  //     } catch (error) {
-  //       next(error);
-  //     }
-  //   };
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ message: `${resumeId}번 이력서`, data: resume });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   //이력서 수정
   editResume = async (req, res, next) => {
@@ -66,7 +70,7 @@ export class ResumesController {
       const resumeId = +req.params.resumeId;
       const { title, content } = req.body;
 
-      const resume = await this.resumesService.findResume(resumeId);
+      const resume = await this.resumesService.findResumeByResumeId(resumeId);
 
       const updatedResume = await this.resumesService.updateResume(
         userId,
@@ -89,7 +93,7 @@ export class ResumesController {
       const { userId } = req.user;
       const resumeId = +req.params.resumeId;
 
-      const resume = await this.resumesService.findResume(resumeId);
+      const resume = await this.resumesService.findResumeByResumeId(resumeId);
 
       await this.resumesService.deleteResume(userId, resume);
 

@@ -1,7 +1,6 @@
 import { ResumesRepository } from '../repositories/resumes.repository.js';
 import { ResumeHistoriesRepository } from '../repositories/resumeHistories.repository.js';
 import { HttpError } from '../errors/http.error.js';
-import { HTTP_STATUS } from '../constants/http-status.constant.js';
 
 export class ResumesService {
   resumesRepository = new ResumesRepository();
@@ -20,8 +19,8 @@ export class ResumesService {
 
   //모든 이력서 조회
   findAllResumes = async (userId, role, sort) => {
-    const roleType = role === 'RECRUITER' ? {} : { userId };
-    const resumes = await this.resumesRepository.findAllResumes(roleType);
+    const whereCondition = role === 'RECRUITER' ? {} : { userId };
+    const resumes = await this.resumesRepository.findAllResumes(whereCondition);
 
     const sortType = sort ? sort.toLowerCase() : 'desc';
 
@@ -44,8 +43,19 @@ export class ResumesService {
     });
   };
 
+  //이력서 상세 조회
+  findResume = async (userId, role, resumeId) => {
+    const resume = await this.resumesRepository.findResume(resumeId);
+
+    if (role !== 'RECRUITER' && resume.userId !== userId) {
+      throw new HttpError.Forbidden('열람 권한이 없는 이력서입니다.');
+    }
+
+    return resume;
+  };
+
   //특정 이력서 조회
-  findResume = async (resumeId) => {
+  findResumeByResumeId = async (resumeId) => {
     const resume = await this.resumesRepository.findResume(resumeId);
 
     return resume;
