@@ -1,5 +1,4 @@
 import express from 'express';
-import { prisma } from '../utils/prisma.utils.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import refreshMiddleware from '../middlewares/refresh.middleware.js';
 import { signUpValidator } from '../middlewares/validators/signUp-validator.middleware.js';
