@@ -1,34 +1,39 @@
 import express from 'express';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import { prisma } from '../utils/prisma.utils.js';
-import joiSchemas from '../schemas/joi_schemas.js';
 import recruiterMiddleware from '../middlewares/recruiter.middleware.js';
 import { Prisma } from '@prisma/client';
+import { editStatusValidator } from '../middlewares/validators/editStatus-validator.middleware.js';
+import { addResumeValidator } from '../middlewares/validators/addResume-validator.middleware.js';
+import { editResumeValidator } from '../middlewares/validators/editResume-validator.middleware.js';
 
 const router = express.Router();
 
 //이력서 생성 api
-router.post('/resumes', authMiddleware, async (req, res, next) => {
-  try {
-    const { userId } = req.user;
-    const { title, content } = req.body;
+router.post(
+  '/resumes',
+  authMiddleware,
+  addResumeValidator,
+  async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const { title, content } = req.body;
 
-    await joiSchemas.postSchema.validateAsync({ title, content });
-
-    const resume = await prisma.resumes.create({
-      data: {
-        userId,
-        title,
-        content,
-      },
-    });
-    return res
-      .status(201)
-      .json({ messge: '이력서 생성에 성공했습니다.', resume });
-  } catch (error) {
-    next(error);
+      const resume = await prisma.resumes.create({
+        data: {
+          userId,
+          title,
+          content,
+        },
+      });
+      return res
+        .status(201)
+        .json({ messge: '이력서 생성에 성공했습니다.', resume });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 //이력서 목록 조회 api
 router.get('/resumes', authMiddleware, async (req, res, next) => {
@@ -109,43 +114,41 @@ router.get('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
 });
 
 //이력서 수정 api
-router.patch('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
-  try {
-    const { userId } = req.user;
-    const { resumeId } = req.params;
-    const { title, content } = req.body;
+router.patch(
+  '/resumes/:resumeId',
+  authMiddleware,
+  editResumeValidator,
+  async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const { resumeId } = req.params;
+      const { title, content } = req.body;
 
-    const resume = await prisma.resumes.findFirst({
-      where: { userId, resumeId: +resumeId },
-    });
+      const resume = await prisma.resumes.findFirst({
+        where: { userId, resumeId: +resumeId },
+      });
 
-    if (!resume) {
-      throw new Error('이력서가 존재하지 않습니다.');
+      if (!resume) {
+        throw new Error('이력서가 존재하지 않습니다.');
+      }
+
+      const updatedResume = await prisma.resumes.update({
+        where: { userId, resumeId: +resumeId },
+        data: {
+          title,
+          content,
+        },
+      });
+
+      return res.status(201).json({
+        message: '이력서 수정에 성공했습니다.',
+        resume: updatedResume,
+      });
+    } catch (error) {
+      next(error);
     }
-
-    if (!title && !content) {
-      return res
-        .status(400)
-        .json({ errorMessage: '수정할 정보를 입력해주세요.' });
-    }
-
-    await joiSchemas.editSchema.validateAsync({ content });
-
-    const updatedResume = await prisma.resumes.update({
-      where: { userId, resumeId: +resumeId },
-      data: {
-        title,
-        content,
-      },
-    });
-
-    return res
-      .status(201)
-      .json({ message: '이력서 수정에 성공했습니다.', resume: updatedResume });
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 //이력서 삭제 api
 router.delete('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
@@ -178,6 +181,7 @@ router.patch(
   '/resumes/:resumeId/status',
   authMiddleware,
   recruiterMiddleware,
+  editStatusValidator,
   async (req, res, next) => {
     try {
       const { userId } = req.user;
@@ -190,8 +194,6 @@ router.patch(
       if (!resume) {
         throw new Error('이력서가 존재하지 않습니다.');
       }
-
-      await joiSchemas.statusEdit.validateAsync({ status, reason });
 
       const [updatedResume, resumeHistory] = await prisma.$transaction(
         async (tx) => {

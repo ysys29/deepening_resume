@@ -2,24 +2,18 @@ import express from 'express';
 import { prisma } from '../utils/prisma.utils.js';
 import bcrypt from 'bcrypt';
 import authMiddleware from '../middlewares/auth.middleware.js';
-import joiSchemas from '../schemas/joi_schemas.js';
 import refreshMiddleware from '../middlewares/refresh.middleware.js';
 import { saltHash } from '../constants/hash.constant.js';
 import { createAccessToken, createRefreshToken } from '../utils/tokens.js';
+import { signUpValidator } from '../middlewares/validators/signUp-validator.middleware.js';
+import { signInValidator } from '../middlewares/validators/signIn-validator.middleware.js';
 
 const router = express.Router();
 
 //회원가입 api
-router.post('/sign-up', async (req, res, next) => {
+router.post('/sign-up', signUpValidator, async (req, res, next) => {
   try {
     const { email, password, verifyPassword, name } = req.body;
-
-    await joiSchemas.signupSchema.validateAsync({
-      email,
-      password,
-      verifyPassword,
-      name,
-    });
 
     if (password !== verifyPassword) {
       return res
@@ -48,11 +42,9 @@ router.post('/sign-up', async (req, res, next) => {
 });
 
 //로그인 api
-router.post('/sign-in', async (req, res, next) => {
+router.post('/sign-in', signInValidator, async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
-    await joiSchemas.signinSchema.validateAsync({ email, password });
 
     const user = await prisma.users.findFirst({ where: { email } });
     if (!user) {
