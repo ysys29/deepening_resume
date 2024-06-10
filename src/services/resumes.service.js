@@ -16,8 +16,10 @@ export class ResumesService {
   };
 
   //모든 이력서 조회
-  findAllResumes = async (userId, sort) => {
-    const resumes = await this.resumesRepository.findAllResumes(userId);
+  findAllResumes = async (userId, role, sort) => {
+    const roleType = role === 'RECRUITER' ? {} : { userId };
+    const resumes = await this.resumesRepository.findAllResumes(roleType);
+
     const sortType = sort ? sort.toLowerCase() : 'desc';
 
     if (sortType === 'desc') {

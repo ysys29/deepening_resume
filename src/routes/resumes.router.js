@@ -19,7 +19,7 @@ router.post(
   resumesController.createResume
 );
 
-//이력서 목록 조회 api === 역할에 따른 필터링 미구현/ sort 미구현
+//이력서 목록 조회 api === 리팩토링 완
 router.get('/resumes', authMiddleware, resumesController.findAllResumes);
 
 //이력서 상세 조회 api

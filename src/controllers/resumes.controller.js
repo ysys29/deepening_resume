@@ -27,9 +27,13 @@ export class ResumesController {
   //이력서 조회
   findAllResumes = async (req, res, next) => {
     try {
-      const { userId } = req.user;
+      const { userId, role } = req.user;
       const { sort } = req.query;
-      const resumes = await this.resumesService.findAllResumes(userId, sort);
+      const resumes = await this.resumesService.findAllResumes(
+        userId,
+        role,
+        sort
+      );
 
       return res
         .status(HTTP_STATUS.OK)

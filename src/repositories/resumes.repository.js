@@ -13,9 +13,9 @@ export class ResumesRepository {
     return resume;
   };
 
-  findAllResumes = async (userId) => {
+  findAllResumes = async (roleType) => {
     const resumes = await prisma.resumes.findMany({
-      where: { userId },
+      where: roleType,
       include: {
         user: true,
       },
