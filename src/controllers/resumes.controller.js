@@ -31,10 +31,11 @@ export class ResumesController {
       const resumeId = +req.params.resumeId;
       const { title, content } = req.body;
 
-      //   const resume = await this.resumesService.findResume(userId, resumeId);
+      const resume = await this.resumesService.findResume(resumeId);
+
       const updatedResume = await this.resumesService.updateResume(
         userId,
-        resumeId,
+        resume,
         title,
         content
       );
@@ -42,6 +43,24 @@ export class ResumesController {
       return res
         .status(HTTP_STATUS.CREATED)
         .json({ message: '이력서를 수정했습니다.', data: updatedResume });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //이력서 삭제
+  deleteResume = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const resumeId = +req.params.resumeId;
+
+      const resume = await this.resumesService.findResume(resumeId);
+
+      await this.resumesService.deleteResume(userId, resume);
+
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ message: '이력서 삭제에 성공했습니다.', resumeId });
     } catch (error) {
       next(error);
     }

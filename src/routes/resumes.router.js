@@ -105,31 +105,12 @@ router.patch(
   resumesController.editResume
 );
 
-//이력서 삭제 api
-router.delete('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
-  try {
-    const { userId } = req.user;
-    const { resumeId } = req.params;
-
-    const resume = await prisma.resumes.findFirst({
-      where: { userId, resumeId: +resumeId },
-    });
-
-    if (!resume) {
-      throw new Error('이력서가 존재하지 않습니다.');
-    }
-
-    await prisma.resumes.delete({
-      where: { userId, resumeId: +resumeId },
-    });
-
-    return res
-      .status(200)
-      .json({ message: '이력서 삭제에 성공했습니다.', resumeId });
-  } catch (error) {
-    next(error);
-  }
-});
+//이력서 삭제 api 리팩토링 완
+router.delete(
+  '/resumes/:resumeId',
+  authMiddleware,
+  resumesController.deleteResume
+);
 
 //이력서 상태 수정 api
 router.patch(
