@@ -21,17 +21,7 @@ router.get('/users', authMiddleware, usersController.getUserById);
 //토큰 재발급 api === 리팩토링 완
 router.post('/tokens', refreshMiddleware, usersController.reissueToken);
 
-//로그아웃 api
-router.delete('/token', refreshMiddleware, async (req, res, next) => {
-  try {
-    const { userId } = req.user;
-    await prisma.refreshTokens.delete({ where: { userId } });
-    return res
-      .status(200)
-      .json({ message: '로그아웃을 완료했습니다.', userId });
-  } catch (error) {
-    next(error);
-  }
-});
+//로그아웃 api === 리팩토링 중
+router.post('/sign-out', refreshMiddleware, usersController.logoutUser);
 
 export default router;

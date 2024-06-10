@@ -48,4 +48,8 @@ export class UsersRepository {
       data: { token: hashedRefreshToken },
     });
   };
+
+  deleteRefreshToken = async (userId) => {
+    await prisma.refreshTokens.delete({ where: { userId } });
+  };
 }

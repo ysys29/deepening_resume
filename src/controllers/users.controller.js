@@ -71,4 +71,17 @@ export class UsersController {
       next(error);
     }
   };
+
+  //로그아웃
+  logoutUser = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+
+      await this.usersService.deleteRefreshToken(userId);
+
+      return res.status(200).json({ message: '로그아웃을 완료했습니다.' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

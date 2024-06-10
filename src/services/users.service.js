@@ -67,6 +67,11 @@ export class UsersService {
     }
   };
 
+  //리프레시 토큰 저장소 토큰 삭제
+  deleteRefreshToken = async (userId) => {
+    await this.usersRepository.deleteRefreshToken(userId);
+  };
+
   //내 정보 조회
   findUserById = async (userId) => {
     const user = await this.usersRepository.findUserById(userId);
