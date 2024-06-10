@@ -100,4 +100,19 @@ export class ResumesController {
       next(error);
     }
   };
+
+  //이력서 상태 수정 로그 조회
+  checkStatusLogs = async (req, res, next) => {
+    try {
+      const resumeId = +req.params.resumeId;
+
+      const logs = await this.resumesService.findStatusLogs(resumeId);
+
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ message: `${resumeId}번 이력서의 상태 변경 이력`, data: logs });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

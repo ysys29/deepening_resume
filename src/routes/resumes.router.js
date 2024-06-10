@@ -129,34 +129,12 @@ router.patch(
   }
 );
 
-//이력서 상태 수정 로그 조회 api
+//이력서 상태 수정 로그 조회 api === 리팩토링 완
 router.get(
-  '/resumes/status/log',
+  '/resumes/:resumeId/status/logs/',
   authMiddleware,
   requireRoles(['RECRUITER']),
-  async (req, res, next) => {
-    const log = await prisma.resumeHistories.findMany({
-      select: {
-        resumeHistoryId: true,
-        user: {
-          select: {
-            name: true,
-          },
-        },
-        resumeId: true,
-        oldStatus: true,
-        newStatus: true,
-        reason: true,
-        createdAt: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-    return res
-      .status(200)
-      .json({ message: '이력서 로그 조회에 성공했습니다.', log });
-  }
+  resumesController.checkStatusLogs
 );
 
 export default router;
