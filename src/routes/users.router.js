@@ -12,36 +12,8 @@ import { UsersController } from '../controllers/users.controller.js';
 const router = express.Router();
 const usersController = new UsersController();
 
-//회원가입 api
-router.post('/sign-up', signUpValidator, async (req, res, next) => {
-  try {
-    const { email, password, verifyPassword, name } = req.body;
-
-    if (password !== verifyPassword) {
-      return res
-        .status(400)
-        .json({ errorMessage: '입력 한 두 비밀번호가 일치하지 않습니다.' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, saltHash);
-
-    const user = await prisma.users.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-      },
-    });
-
-    const { password: _, ...resUser } = user;
-
-    return res
-      .status(201)
-      .json({ message: '회원가입이 완료되었습니다.', user: resUser });
-  } catch (error) {
-    next(error);
-  }
-});
+//회원가입 api === 리팩토링 중
+router.post('/sign-up', signUpValidator, usersController.createUser);
 
 //로그인 api
 router.post('/sign-in', signInValidator, async (req, res, next) => {
@@ -97,7 +69,7 @@ router.post('/sign-in', signInValidator, async (req, res, next) => {
   }
 });
 
-//내 정보 조회 api
+//내 정보 조회 api === 리팩토링 완
 router.get('/users', authMiddleware, usersController.getUserById);
 
 //토큰 재발급 api
