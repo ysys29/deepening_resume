@@ -14,18 +14,18 @@ datasource db {
 }
 
 model users {
-  user_id Int @id @default(autoincrement()) @map("user_id")
-  email String @unique @map("email")
-  password String @map("password")
-  name String @map("name")
-  role UserRole @default(APPLICANT) @map("role")
+  userId   Int      @id @default(autoincrement()) @map("user_id")
+  email    String   @unique @map("email")
+  password String   @map("password")
+  name     String   @map("name")
+  role     UserRole @default(APPLICANT) @map("role")
 
-  created_at DateTime @default(now()) @map("created_at")
-  updated_at DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  resumes resumes[]
-  resume_histories resume_histories[]
-  refresh_tokens refresh_tokens?
+  resumes          resumes[]
+  resume_histories resumeHistories[]
+  refresh_tokens   refreshTokens?
 
   @@map("users")
 }
@@ -36,18 +36,18 @@ enum UserRole {
 }
 
 model resumes {
-  resume_id Int @id @default(autoincrement()) @map("resume_id")
-  user_id Int @map("user_id")
-  title String @map("title")
-  content String @db.Text @map("content")
-  status ApplyStatus @default(APPLY) @map("status")
+  resumeId Int         @id @default(autoincrement()) @map("resume_id")
+  userId   Int         @map("user_id")
+  title    String      @map("title")
+  content  String      @map("content") @db.Text
+  status   ApplyStatus @default(APPLY) @map("status")
 
-  created_at DateTime @default(now()) @map("created_at")
-  updated_at DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  resume_histories resume_histories[]
+  resume_histories resumeHistories[]
 
-  user users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user users @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("resumes")
 }
@@ -61,30 +61,30 @@ enum ApplyStatus {
   FINAL_PASS
 }
 
-model resume_histories {
-  resume_history_id Int @id @default(autoincrement()) @map("resume_history_id")
-  recruiter_id Int @map("recruiter_id")
-  resume_id Int @map("resume_id")
-  old_status String @map("old_status")
-  new_status String @map("new_status")
-  reason String @map("reason")
+model resumeHistories {
+  resumeHistoryId Int    @id @default(autoincrement()) @map("resume_history_id")
+  recruiterId     Int    @map("recruiter_id")
+  resumeId        Int    @map("resume_id")
+  oldStatus       String @map("old_status")
+  newStatus       String @map("new_status")
+  reason          String @map("reason")
 
-  created_at DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  user users @relation(fields: [recruiter_id], references: [user_id], onDelete: Cascade)
-  Resume resumes @relation(fields: [resume_id], references: [resume_id], onDelete: Cascade)
+  user   users   @relation(fields: [recruiterId], references: [userId], onDelete: Cascade)
+  Resume resumes @relation(fields: [resumeId], references: [resumeId], onDelete: Cascade)
 
   @@map("resume_histories")
 }
 
-model refresh_tokens {
-  refresh_token_id Int @id @default(autoincrement()) @map("refresh_token_id")
-  user_id Int @unique @map("user_id")
-  token String @map("token")
+model refreshTokens {
+  refreshTokenId Int    @id @default(autoincrement()) @map("refresh_token_id")
+  userId         Int    @unique @map("user_id")
+  token          String @map("token")
 
-  created_at DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  user users @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user users @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("refresh_tokens")
 }

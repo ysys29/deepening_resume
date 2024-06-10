@@ -10,14 +10,14 @@ const router = express.Router();
 //이력서 생성 api
 router.post('/resumes', authMiddleware, async (req, res, next) => {
   try {
-    const { user_id } = req.user;
+    const { userId } = req.user;
     const { title, content } = req.body;
 
     await joiSchemas.postSchema.validateAsync({ title, content });
 
     const resume = await prisma.resumes.create({
       data: {
-        user_id,
+        userId,
         title,
         content,
       },
@@ -33,19 +33,19 @@ router.post('/resumes', authMiddleware, async (req, res, next) => {
 //이력서 목록 조회 api
 router.get('/resumes', authMiddleware, async (req, res, next) => {
   try {
-    const { user_id, role } = req.user;
+    const { userId, role } = req.user;
     const { sort, status } = req.query;
 
     const querySort = sort && sort.toLowerCase() === 'asc' ? 'asc' : 'desc';
     const queryStatus = status ? { status: status.toUpperCase() } : {};
 
     //로그인 한 사람이 recruiter일 때
-    const userRole = role !== 'RECRUITER' ? { user_id } : {};
+    const userRole = role !== 'RECRUITER' ? { userId } : {};
 
     const resume = await prisma.resumes.findMany({
       where: { ...userRole, ...queryStatus },
       select: {
-        resume_id: true,
+        resumeId: true,
         user: {
           select: {
             name: true,
@@ -54,11 +54,11 @@ router.get('/resumes', authMiddleware, async (req, res, next) => {
         title: true,
         content: true,
         status: true,
-        created_at: true,
-        updated_at: true,
+        createdAt: true,
+        updatedAt: true,
       },
       orderBy: {
-        created_at: querySort,
+        createdAt: querySort,
       },
     });
 
@@ -71,20 +71,20 @@ router.get('/resumes', authMiddleware, async (req, res, next) => {
 });
 
 //이력서 상세 조회 api
-router.get('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
+router.get('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
   try {
-    const { user_id, role } = req.user;
-    const { resume_id } = req.params;
+    const { userId, role } = req.user;
+    const { resumeId } = req.params;
 
     const userRole =
       role !== 'RECRUITER'
-        ? { user_id, resume_id: +resume_id }
-        : { resume_id: +resume_id };
+        ? { userId, resumeId: +resumeId }
+        : { resumeId: +resumeId };
 
     const resume = await prisma.resumes.findFirst({
       where: userRole,
       select: {
-        resume_id: true,
+        resumeId: true,
         user: {
           select: {
             name: true,
@@ -93,8 +93,8 @@ router.get('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
         title: true,
         content: true,
         status: true,
-        created_at: true,
-        updated_at: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -109,14 +109,14 @@ router.get('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
 });
 
 //이력서 수정 api
-router.patch('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
+router.patch('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
   try {
-    const { user_id } = req.user;
-    const { resume_id } = req.params;
+    const { userId } = req.user;
+    const { resumeId } = req.params;
     const { title, content } = req.body;
 
     const resume = await prisma.resumes.findFirst({
-      where: { user_id, resume_id: +resume_id },
+      where: { userId, resumeId: +resumeId },
     });
 
     if (!resume) {
@@ -132,7 +132,7 @@ router.patch('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
     await joiSchemas.editSchema.validateAsync({ content });
 
     const updatedResume = await prisma.resumes.update({
-      where: { user_id, resume_id: +resume_id },
+      where: { userId, resumeId: +resumeId },
       data: {
         title,
         content,
@@ -148,13 +148,13 @@ router.patch('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
 });
 
 //이력서 삭제 api
-router.delete('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
+router.delete('/resumes/:resumeId', authMiddleware, async (req, res, next) => {
   try {
-    const { user_id } = req.user;
-    const { resume_id } = req.params;
+    const { userId } = req.user;
+    const { resumeId } = req.params;
 
     const resume = await prisma.resumes.findFirst({
-      where: { user_id, resume_id: +resume_id },
+      where: { userId, resumeId: +resumeId },
     });
 
     if (!resume) {
@@ -162,12 +162,12 @@ router.delete('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
     }
 
     await prisma.resumes.delete({
-      where: { user_id, resume_id: +resume_id },
+      where: { userId, resumeId: +resumeId },
     });
 
     return res
       .status(200)
-      .json({ message: '이력서 삭제에 성공했습니다.', resume_id });
+      .json({ message: '이력서 삭제에 성공했습니다.', resumeId });
   } catch (error) {
     next(error);
   }
@@ -175,16 +175,16 @@ router.delete('/resumes/:resume_id', authMiddleware, async (req, res, next) => {
 
 //이력서 상태 수정 api
 router.patch(
-  '/resumes/:resume_id/status',
+  '/resumes/:resumeId/status',
   authMiddleware,
   recruiterMiddleware,
   async (req, res, next) => {
     try {
-      const { user_id } = req.user;
-      const { resume_id } = req.params;
+      const { userId } = req.user;
+      const { resumeId } = req.params;
       const { status, reason } = req.body;
       const resume = await prisma.resumes.findFirst({
-        where: { resume_id: +resume_id },
+        where: { resumeId: +resumeId },
       });
 
       if (!resume) {
@@ -196,18 +196,18 @@ router.patch(
       const [updatedResume, resumeHistory] = await prisma.$transaction(
         async (tx) => {
           const updatedResume = await tx.resumes.update({
-            where: { resume_id: +resume_id },
+            where: { resumeId: +resumeId },
             data: {
               status: status.toUpperCase(),
             },
           });
 
-          const resumeHistory = await tx.resume_histories.create({
+          const resumeHistory = await tx.resumeHistories.create({
             data: {
-              recruiter_id: user_id,
-              resume_id: +resume_id,
-              old_status: resume.status,
-              new_status: status.toUpperCase(),
+              recruiterId: userId,
+              resumeId: +resumeId,
+              oldStatus: resume.status,
+              newStatus: status.toUpperCase(),
               reason,
             },
           });
@@ -234,22 +234,22 @@ router.get(
   authMiddleware,
   recruiterMiddleware,
   async (req, res, next) => {
-    const log = await prisma.resume_histories.findMany({
+    const log = await prisma.resumeHistories.findMany({
       select: {
-        resume_history_id: true,
+        resumeHistoryId: true,
         user: {
           select: {
             name: true,
           },
         },
-        resume_id: true,
-        old_status: true,
-        new_status: true,
+        resumeId: true,
+        oldStatus: true,
+        newStatus: true,
         reason: true,
-        created_at: true,
+        createdAt: true,
       },
       orderBy: {
-        created_at: 'desc',
+        createdAt: 'desc',
       },
     });
     return res
