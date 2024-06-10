@@ -43,6 +43,22 @@ export class ResumesController {
     }
   };
 
+  //   //이력서 상세 조회
+  //   findPost = async (req, res, next) => {
+  //     try {
+  //       const { userId, role } = req.user;
+  //       const resumeId = +req.params.resumeId;
+
+  //       const resume = await this.resumesService.findResume(resumeId);
+
+  //       return res
+  //         .status(HTTP_STATUS.OK)
+  //         .json({ message: `${resumeId}번 이력서`, data: resume });
+  //     } catch (error) {
+  //       next(error);
+  //     }
+  //   };
+
   //이력서 수정
   editResume = async (req, res, next) => {
     try {

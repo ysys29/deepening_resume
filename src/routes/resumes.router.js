@@ -1,7 +1,7 @@
 import express from 'express';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import { prisma } from '../utils/prisma.utils.js';
-import recruiterMiddleware from '../middlewares/recruiter.middleware.js';
+import { requireRoles } from '../middlewares/recruiter.middleware.js';
 import { Prisma } from '@prisma/client';
 import { editStatusValidator } from '../middlewares/validators/editStatus-validator.middleware.js';
 import { addResumeValidator } from '../middlewares/validators/addResume-validator.middleware.js';
@@ -68,7 +68,7 @@ router.patch(
   resumesController.editResume
 );
 
-//이력서 삭제 api 리팩토링 완
+//이력서 삭제 api === 리팩토링 완
 router.delete(
   '/resumes/:resumeId',
   authMiddleware,
@@ -79,7 +79,7 @@ router.delete(
 router.patch(
   '/resumes/:resumeId/status',
   authMiddleware,
-  recruiterMiddleware,
+  requireRoles(['RECRUITER']),
   editStatusValidator,
   async (req, res, next) => {
     try {
@@ -133,7 +133,7 @@ router.patch(
 router.get(
   '/resumes/status/log',
   authMiddleware,
-  recruiterMiddleware,
+  requireRoles(['RECRUITER']),
   async (req, res, next) => {
     const log = await prisma.resumeHistories.findMany({
       select: {
