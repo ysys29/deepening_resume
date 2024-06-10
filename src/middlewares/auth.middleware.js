@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma.utils.js';
-import 'dotenv/config';
 import { ACCESS_TOKEN_SECRET_KEY } from '../constants/env.constant.js';
 import JwtError from '../errors/jwt.error.js';
 

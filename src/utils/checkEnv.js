@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import {
   ACCESS_TOKEN_SECRET_KEY,
   REFRESH_TOKEN_SECRET_KEY,
