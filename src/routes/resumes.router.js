@@ -75,58 +75,12 @@ router.delete(
   resumesController.deleteResume
 );
 
-//이력서 상태 수정 api
+//이력서 상태 수정 api === 리팩토링 트랜잭션 제외 완
 router.patch(
   '/resumes/:resumeId/status',
   authMiddleware,
   requireRoles(['RECRUITER']),
-  editStatusValidator,
-  async (req, res, next) => {
-    try {
-      const { userId } = req.user;
-      const { resumeId } = req.params;
-      const { status, reason } = req.body;
-      const resume = await prisma.resumes.findFirst({
-        where: { resumeId: +resumeId },
-      });
-
-      if (!resume) {
-        throw new Error('이력서가 존재하지 않습니다.');
-      }
-
-      const [updatedResume, resumeHistory] = await prisma.$transaction(
-        async (tx) => {
-          const updatedResume = await tx.resumes.update({
-            where: { resumeId: +resumeId },
-            data: {
-              status: status.toUpperCase(),
-            },
-          });
-
-          const resumeHistory = await tx.resumeHistories.create({
-            data: {
-              recruiterId: userId,
-              resumeId: +resumeId,
-              oldStatus: resume.status,
-              newStatus: status.toUpperCase(),
-              reason,
-            },
-          });
-          return [updatedResume, resumeHistory];
-        },
-        {
-          isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
-        }
-      );
-
-      return res.status(201).json({
-        message: '이력서 상태 변경에 성공했습니다.',
-        data: resumeHistory,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
+  resumesController.updateResumeStatus
 );
 
 //이력서 상태 수정 로그 조회 api === 리팩토링 완

@@ -101,6 +101,28 @@ export class ResumesController {
     }
   };
 
+  //이력서 상태 수정
+  updateResumeStatus = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const resumeId = +req.params.resumeId;
+      const { status, reason } = req.body;
+
+      const data = await this.resumesService.updateResumeStatus(
+        userId,
+        resumeId,
+        status,
+        reason
+      );
+
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ message: `${resumeId}번 이력서의 상태변경 성공`, data });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   //이력서 상태 수정 로그 조회
   checkStatusLogs = async (req, res, next) => {
     try {

@@ -1,6 +1,7 @@
 import { ResumesRepository } from '../repositories/resumes.repository.js';
 import { ResumeHistoriesRepository } from '../repositories/resumeHistories.repository.js';
 import { HttpError } from '../errors/http.error.js';
+import { HTTP_STATUS } from '../constants/http-status.constant.js';
 
 export class ResumesService {
   resumesRepository = new ResumesRepository();
@@ -78,6 +79,26 @@ export class ResumesService {
     }
 
     await this.resumesRepository.deleteResume(resume.resumeId);
+  };
+
+  //이력서 상태 변경
+  updateResumeStatus = async (userId, resumeId, status, reason) => {
+    const resume = await this.resumesRepository.findResume(resumeId);
+    if (!resume) {
+      throw new HttpError.NotFound('이력서가 존재하지 않습니다.');
+    }
+
+    await this.resumesRepository.updateResume(resumeId, status.toUpperCase());
+
+    const statusLog =
+      await this.resumeHistoriesRepository.createResumeStatusLog(
+        userId,
+        resume,
+        status.toUpperCase(),
+        reason
+      );
+
+    return statusLog;
   };
 
   //이력서 상태 수정 로그

@@ -30,10 +30,10 @@ export class ResumesRepository {
     return resume;
   };
 
-  updateResume = async (resumeId, title, content) => {
+  updateResume = async (resumeId, title, content, status) => {
     const updatedResume = await prisma.resumes.update({
       where: { resumeId },
-      data: { title, content },
+      data: { title, content, status },
     });
     return updatedResume;
   };
