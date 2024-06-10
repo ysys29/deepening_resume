@@ -28,7 +28,8 @@ export class ResumesController {
   findAllResumes = async (req, res, next) => {
     try {
       const { userId } = req.user;
-      const resumes = await this.resumesService.findAllResumes(userId);
+      const { sort } = req.query;
+      const resumes = await this.resumesService.findAllResumes(userId, sort);
 
       return res
         .status(HTTP_STATUS.OK)
