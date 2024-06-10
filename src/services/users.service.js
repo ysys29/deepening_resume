@@ -6,6 +6,7 @@ import { saltHashRound } from '../constants/hash.constant.js';
 export class UsersService {
   usersRepository = new UsersRepository();
 
+  //회원가입
   createUser = async (email, password, verifyPassword, name) => {
     if (password !== verifyPassword) {
       throw new Error('입력한 두 비밀번호가 일치하지 않습니다.');
@@ -29,6 +30,7 @@ export class UsersService {
     };
   };
 
+  //로그인
   loginUser = async (email, password) => {
     const user = await this.usersRepository.findUserByEmail(email);
 
@@ -43,24 +45,15 @@ export class UsersService {
     return user;
   };
 
+  //토큰 생성
   createAccessAndRefreshToken = async (userId) => {
     const accessToken = createAccessToken(userId);
     const refreshToken = createRefreshToken(userId);
 
-    // const existedRefreshToken =
-    //   await this.usersRepository.findRefreshToken(userId);
-
-    // const hashedRefreshToken = await bcrypt.hash(refreshToken, saltHashRound);
-
-    // if (!existedRefreshToken) {
-    //   await this.usersRepository.addRefreshToken(userId, hashedRefreshToken);
-    // } else if (existedRefreshToken) {
-    //   await this.usersRepository.updateRefreshToken(userId, hashedRefreshToken);
-    // }
-
     return { accessToken, refreshToken };
   };
 
+  //리프레시 토큰 저장소 업데이트(추가)
   addOrUpdateRefreshToken = async (userId, refreshToken) => {
     const existedRefreshToken =
       await this.usersRepository.findRefreshToken(userId);
@@ -74,6 +67,7 @@ export class UsersService {
     }
   };
 
+  //내 정보 조회
   findUserById = async (userId) => {
     const user = await this.usersRepository.findUserById(userId);
 

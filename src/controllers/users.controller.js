@@ -1,3 +1,4 @@
+import { saltHashRound } from '../constants/hash.constant.js';
 import { UsersService } from '../services/users.service.js';
 
 export class UsersController {
@@ -50,6 +51,22 @@ export class UsersController {
       const user = await this.usersService.findUserById(userId);
 
       return res.status(200).json({ data: user });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //토큰 재발급
+  reissueToken = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+
+      const { accessToken, refreshToken } =
+        await this.usersService.createAccessAndRefreshToken(userId);
+
+      await this.usersService.addOrUpdateRefreshToken(userId, refreshToken);
+
+      return res.status(201).json({ accessToken, refreshToken });
     } catch (error) {
       next(error);
     }
