@@ -6,33 +6,17 @@ import { Prisma } from '@prisma/client';
 import { editStatusValidator } from '../middlewares/validators/editStatus-validator.middleware.js';
 import { addResumeValidator } from '../middlewares/validators/addResume-validator.middleware.js';
 import { editResumeValidator } from '../middlewares/validators/editResume-validator.middleware.js';
+import { ResumesController } from '../controllers/resumes.controller.js';
 
 const router = express.Router();
+const resumesController = new ResumesController();
 
-//이력서 생성 api
+//이력서 생성 api === 리팩토링 완
 router.post(
   '/resumes',
   authMiddleware,
   addResumeValidator,
-  async (req, res, next) => {
-    try {
-      const { userId } = req.user;
-      const { title, content } = req.body;
-
-      const resume = await prisma.resumes.create({
-        data: {
-          userId,
-          title,
-          content,
-        },
-      });
-      return res
-        .status(201)
-        .json({ messge: '이력서 생성에 성공했습니다.', resume });
-    } catch (error) {
-      next(error);
-    }
-  }
+  resumesController.createResume
 );
 
 //이력서 목록 조회 api
