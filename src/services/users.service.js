@@ -79,7 +79,7 @@ export class UsersService {
 
   //내 정보 조회
   findUserById = async (userId) => {
-    const user = await this.tokensRepository.findUserById(userId);
+    const user = await this.usersRepository.findUserById(userId);
 
     return {
       userId: user.userId,

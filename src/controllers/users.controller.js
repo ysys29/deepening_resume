@@ -1,5 +1,5 @@
-import { saltHashRound } from '../constants/hash.constant.js';
 import { UsersService } from '../services/users.service.js';
+import { HTTP_STATUS } from '../constants/http-status.constant.js';
 
 export class UsersController {
   usersService = new UsersService();
@@ -16,7 +16,9 @@ export class UsersController {
         name
       );
 
-      return res.status(201).json({ data: createdUser });
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ message: '회원가입이 완료되었습니다.', data: createdUser });
     } catch (error) {
       next(error);
     }
@@ -37,7 +39,9 @@ export class UsersController {
         refreshToken
       );
 
-      return res.status(200).json({ accessToken, refreshToken });
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ message: '로그인에 성공했습니다.', accessToken, refreshToken });
     } catch (error) {
       next(error);
     }
@@ -50,7 +54,9 @@ export class UsersController {
 
       const user = await this.usersService.findUserById(userId);
 
-      return res.status(200).json({ data: user });
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ message: '내 정보 조회에 성공했습니다.', data: user });
     } catch (error) {
       next(error);
     }
@@ -66,7 +72,9 @@ export class UsersController {
 
       await this.usersService.addOrUpdateRefreshToken(userId, refreshToken);
 
-      return res.status(201).json({ accessToken, refreshToken });
+      return res
+        .status(HTTP_STATUS.CREATED)
+        .json({ message: '토큰을 재발급했습니다.', accessToken, refreshToken });
     } catch (error) {
       next(error);
     }
@@ -79,7 +87,9 @@ export class UsersController {
 
       await this.usersService.deleteRefreshToken(userId);
 
-      return res.status(200).json({ message: '로그아웃을 완료했습니다.' });
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ message: '로그아웃을 완료했습니다.', userId });
     } catch (error) {
       next(error);
     }
