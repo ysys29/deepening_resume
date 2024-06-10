@@ -21,6 +21,27 @@ export class UsersController {
     }
   };
 
+  //로그인 api
+  loginUser = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+
+      const user = await this.usersService.loginUser(email, password);
+
+      const { accessToken, refreshToken } =
+        await this.usersService.createAccessAndRefreshToken(user.userId);
+
+      await this.usersService.addOrUpdateRefreshToken(
+        user.userId,
+        refreshToken
+      );
+
+      return res.status(200).json({ accessToken, refreshToken });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   //내 정보 조회 api
   getUserById = async (req, res, next) => {
     try {
