@@ -13,6 +13,17 @@ export class ResumesRepository {
     return resume;
   };
 
+  findAllResumes = async (userId) => {
+    const resumes = await prisma.resumes.findMany({
+      where: { userId },
+      include: {
+        user: true,
+      },
+    });
+
+    return resumes;
+  };
+
   findResume = async (resumeId) => {
     const resume = await prisma.resumes.findUnique({ where: { resumeId } });
 

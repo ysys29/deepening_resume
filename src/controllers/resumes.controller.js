@@ -24,6 +24,20 @@ export class ResumesController {
     }
   };
 
+  //이력서 조회
+  findAllResumes = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const resumes = await this.resumesService.findAllResumes(userId);
+
+      return res
+        .status(HTTP_STATUS.OK)
+        .json({ message: '이력서 목록', data: resumes });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   //이력서 수정
   editResume = async (req, res, next) => {
     try {

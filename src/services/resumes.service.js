@@ -15,7 +15,24 @@ export class ResumesService {
     return resume;
   };
 
-  //이력서 찾기
+  //모든 이력서 조회
+  findAllResumes = async (userId) => {
+    const resumes = await this.resumesRepository.findAllResumes(userId);
+
+    return resumes.map((resumes) => {
+      return {
+        resumeId: resumes.resumeId,
+        name: resumes.user.name,
+        title: resumes.title,
+        content: resumes.content,
+        status: resumes.status,
+        createdAt: resumes.createdAt,
+        updatedAt: resumes.updatedAt,
+      };
+    });
+  };
+
+  //특정 이력서 조회
   findResume = async (resumeId) => {
     const resume = await this.resumesRepository.findResume(resumeId);
 
