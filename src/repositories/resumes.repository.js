@@ -4,7 +4,6 @@ export class ResumesRepository {
   }
 
   createResume = async (userId, title, content) => {
-    console.log('3333333333');
     const resume = await this.prisma.resumes.create({
       data: {
         userId,
@@ -35,10 +34,10 @@ export class ResumesRepository {
     return resume;
   };
 
-  updateResume = async ({ resumeId, title, content, status }) => {
+  updateResume = async (resumeId, title, content) => {
     const updatedResume = await this.prisma.resumes.update({
       where: { resumeId },
-      data: { title, content, status },
+      data: { title, content },
     });
     return updatedResume;
   };
@@ -54,7 +53,6 @@ export class ResumesRepository {
           },
         });
 
-        // throw new Error('akhfkashflasdhjflkhjsdk');
         //이력서 로그 저장
         const statusLog = await tx.resumeHistories.create({
           data: {

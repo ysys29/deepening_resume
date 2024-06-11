@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/app.js",
-    "format": "prettier --write *.js **/*.js"
+    "format": "prettier --write *.js **/*.js",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --forceExit",
+    "test:unit": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest __tests__/unit --forceExit"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
