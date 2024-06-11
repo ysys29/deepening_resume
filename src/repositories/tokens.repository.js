@@ -1,6 +1,6 @@
 import { prisma } from '../utils/prisma.utils.js';
 
-export class TokensRepositoy {
+export class TokensRepository {
   findRefreshToken = async (userId) => {
     const existedRefreshToken = await prisma.refreshTokens.findUnique({
       where: { userId },

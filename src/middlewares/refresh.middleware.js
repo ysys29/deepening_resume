@@ -3,11 +3,11 @@ import { prisma } from '../utils/prisma.utils.js';
 import bcrypt from 'bcrypt';
 import { REFRESH_TOKEN_SECRET_KEY } from '../constants/env.constant.js';
 import { HttpError } from '../errors/http.error.js';
-import { TokensRepositoy } from '../repositories/tokens.repository.js';
+import { TokensRepository } from '../repositories/tokens.repository.js';
 
 export default async function (req, res, next) {
   try {
-    const tokensRepository = new TokensRepositoy();
+    const tokensRepository = new TokensRepository();
     const authorization = req.headers['authorization'];
     if (!authorization) {
       throw new HttpError.Unauthorized('인증 정보가 없습니다.');
