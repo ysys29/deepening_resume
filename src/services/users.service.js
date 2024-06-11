@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { createAccessToken, createRefreshToken } from '../utils/tokens.js';
 import { saltHashRound } from '../constants/hash.constant.js';
 import { TokensRepository } from '../repositories/tokens.repository.js';
+import { HttpError } from '../errors/http.error.js';
 
 export class UsersService {
   usersRepository = new UsersRepository();
@@ -41,7 +42,7 @@ export class UsersService {
       : null;
 
     if (!user || !decodedPassword) {
-      throw new Error('인증 정보가 유효하지 않습니다.');
+      throw new HttpError.BadRequest('인증 정보가 유효하지 않습니다.');
     }
 
     return user;
