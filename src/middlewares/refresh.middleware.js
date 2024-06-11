@@ -23,16 +23,7 @@ export default async function (req, res, next) {
     //가져온 토큰
     const payload = jwt.verify(token, REFRESH_TOKEN_SECRET_KEY);
 
-    console.log(payload);
-
-    // const tokenInfo = await prisma.refreshTokens.findFirst({
-    //   where: { userId: payload.userId },
-    // });
-
     const tokenInfo = await tokensRepository.findRefreshToken(payload.userId);
-
-    console.log(tokenInfo);
-    console.log(token);
 
     if (!tokenInfo) {
       throw new HttpError.Unauthorized(
