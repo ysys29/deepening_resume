@@ -19,9 +19,13 @@ export class ResumesService {
   };
 
   //모든 이력서 조회
-  findAllResumes = async (userId, role, sort) => {
+  findAllResumes = async (userId, role, sort, status) => {
     const whereCondition = role === 'RECRUITER' ? {} : { userId };
-    const resumes = await this.resumesRepository.findAllResumes(whereCondition);
+    const statusCondition = status ? { status: status.toUpperCase() } : {};
+    const resumes = await this.resumesRepository.findAllResumes(
+      whereCondition,
+      statusCondition
+    );
 
     const sortType = sort ? sort.toLowerCase() : 'desc';
 

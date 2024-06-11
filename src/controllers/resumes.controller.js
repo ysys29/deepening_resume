@@ -25,15 +25,16 @@ export class ResumesController {
     }
   };
 
-  //이력서 조회
+  //이력서 조회 //이력서 상태에 따른 필터링
   findAllResumes = async (req, res, next) => {
     try {
       const { userId, role } = req.user;
-      const { sort } = req.query;
+      const { sort, status } = req.query;
       const resumes = await this.resumesService.findAllResumes(
         userId,
         role,
-        sort
+        sort,
+        status
       );
 
       return res

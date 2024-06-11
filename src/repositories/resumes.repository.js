@@ -16,9 +16,9 @@ export class ResumesRepository {
     return resume;
   };
 
-  findAllResumes = async (whereCondition) => {
+  findAllResumes = async (whereCondition, statusCondition) => {
     const resumes = await this.prisma.resumes.findMany({
-      where: whereCondition,
+      where: { ...whereCondition, ...statusCondition },
       include: {
         user: true,
       },
