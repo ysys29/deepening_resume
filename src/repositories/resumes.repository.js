@@ -38,6 +38,34 @@ export class ResumesRepository {
     return updatedResume;
   };
 
+  updateResumeAndLog = async (resume, userId, status, reason) => {
+    const statusLog = await prisma.$transaction(
+      //이력서 상태 변경
+      async (tx) => {
+        await tx.resumes.update({
+          where: { resumeId: resume.resumeId },
+          data: {
+            status: status.toUpperCase(),
+          },
+        });
+
+        // throw new Error('akhfkashflasdhjflkhjsdk');
+        //이력서 로그 저장
+        const statusLog = await tx.resumeHistories.create({
+          data: {
+            recruiterId: userId,
+            resumeId: resume.resumeId,
+            oldStatus: resume.status,
+            newStatus: status,
+            reason,
+          },
+        });
+        return statusLog;
+      }
+    );
+    return statusLog;
+  };
+
   deleteResume = async (resumeId) => {
     await prisma.resumes.delete({ where: { resumeId } });
   };

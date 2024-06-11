@@ -84,20 +84,27 @@ export class ResumesService {
       throw new HttpError.NotFound('이력서가 존재하지 않습니다.');
     }
 
-    //이력서 상태 변경
-    await this.resumesRepository.updateResume({
-      resumeId,
-      status: status.toUpperCase(),
-    });
+    // //이력서 상태 변경
+    // await this.resumesRepository.updateResume({
+    //   resumeId,
+    //   status: status.toUpperCase(),
+    // });
 
-    //이력서 상태 변경 로그 기록
-    const statusLog =
-      await this.resumeHistoriesRepository.createResumeStatusLog(
-        userId,
-        resume,
-        status.toUpperCase(),
-        reason
-      );
+    // //이력서 상태 변경 로그 기록
+    // const statusLog =
+    //   await this.resumeHistoriesRepository.createResumeStatusLog(
+    //     userId,
+    //     resume,
+    //     status.toUpperCase(),
+    //     reason
+    //   );
+
+    const statusLog = await this.resumesRepository.updateResumeAndLog(
+      resume,
+      userId,
+      status,
+      reason
+    );
 
     return statusLog;
   };
