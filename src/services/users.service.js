@@ -12,7 +12,7 @@ export class UsersService {
   //회원가입
   createUser = async (email, password, verifyPassword, name) => {
     if (password !== verifyPassword) {
-      throw new Error('입력한 두 비밀번호가 일치하지 않습니다.');
+      throw new HttpError.BadRequest('입력한 두 비밀번호가 일치하지 않습니다.');
     }
 
     const hashedPassword = await bcrypt.hash(password, saltHashRound);
@@ -58,19 +58,9 @@ export class UsersService {
 
   //리프레시 토큰 저장소 업데이트(추가)
   addOrUpdateRefreshToken = async (userId, refreshToken) => {
-    const existedRefreshToken =
-      await this.tokensRepository.findRefreshToken(userId);
-
     const hashedRefreshToken = await bcrypt.hash(refreshToken, saltHashRound);
 
-    if (!existedRefreshToken) {
-      await this.tokensRepository.addRefreshToken(userId, hashedRefreshToken);
-    } else if (existedRefreshToken) {
-      await this.tokensRepository.updateRefreshToken(
-        userId,
-        hashedRefreshToken
-      );
-    }
+    await this.tokensRepository.upsertRefreshToken(userId, hashedRefreshToken);
   };
 
   //리프레시 토큰 저장소 토큰 삭제

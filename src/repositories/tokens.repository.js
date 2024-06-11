@@ -9,19 +9,16 @@ export class TokensRepository {
     return existedRefreshToken;
   };
 
-  addRefreshToken = async (userId, hashedRefreshToken) => {
-    await prisma.refreshTokens.create({
-      data: {
+  upsertRefreshToken = async (userId, hashedRefreshToken) => {
+    await prisma.refreshTokens.upsert({
+      where: { userId },
+      update: {
+        token: hashedRefreshToken,
+      },
+      create: {
         userId,
         token: hashedRefreshToken,
       },
-    });
-  };
-
-  updateRefreshToken = async (userId, hashedRefreshToken) => {
-    await prisma.refreshTokens.update({
-      where: { userId },
-      data: { token: hashedRefreshToken },
     });
   };
 
