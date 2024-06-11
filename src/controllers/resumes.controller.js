@@ -50,9 +50,9 @@ export class ResumesController {
       const resumeId = +req.params.resumeId;
 
       const resume = await this.resumesService.findResume(
+        resumeId,
         userId,
-        role,
-        resumeId
+        role
       );
 
       return res
@@ -69,12 +69,15 @@ export class ResumesController {
       const { userId } = req.user;
       const resumeId = +req.params.resumeId;
       const { title, content } = req.body;
+      console.log('1111', resumeId);
 
-      const resume = await this.resumesService.findResumeByResumeId(resumeId);
+      //여기에서는 받은 정보만 반환하고, 나머지 로직은 서비스 계층에서 해결하기
+      // const resume = await this.resumesService.findResumeByResumeId(resumeId);
+      // const resume = await this.resumesService.findResume(resumeId, userId);
 
       const updatedResume = await this.resumesService.updateResume(
         userId,
-        resume,
+        resumeId,
         title,
         content
       );
@@ -93,9 +96,10 @@ export class ResumesController {
       const { userId } = req.user;
       const resumeId = +req.params.resumeId;
 
-      const resume = await this.resumesService.findResumeByResumeId(resumeId);
+      // const resume = await this.resumesService.findResumeByResumeId(resumeId);
+      // const resume = await this.resumesService.findResume(resumeId);
 
-      await this.resumesService.deleteResume(userId, resume);
+      await this.resumesService.deleteResume(userId, resumeId);
 
       return res
         .status(HTTP_STATUS.OK)
