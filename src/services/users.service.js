@@ -1,13 +1,13 @@
-import { UsersRepository } from '../repositories/users.repository.js';
 import bcrypt from 'bcrypt';
 import { createAccessToken, createRefreshToken } from '../utils/tokens.js';
 import { saltHashRound } from '../constants/hash.constant.js';
-import { TokensRepository } from '../repositories/tokens.repository.js';
 import { HttpError } from '../errors/http.error.js';
 
 export class UsersService {
-  usersRepository = new UsersRepository();
-  tokensRepository = new TokensRepository();
+  constructor(usersRepository, tokensRepository) {
+    this.usersRepository = usersRepository;
+    this.tokensRepository = tokensRepository;
+  }
 
   //회원가입
   createUser = async (email, password, verifyPassword, name) => {

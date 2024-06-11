@@ -1,8 +1,11 @@
-import { prisma } from '../utils/prisma.utils.js';
-
 export class ResumesRepository {
+  constructor(prisma) {
+    this.prisma = prisma;
+  }
+
   createResume = async (userId, title, content) => {
-    const resume = await prisma.resumes.create({
+    console.log('3333333333');
+    const resume = await this.prisma.resumes.create({
       data: {
         userId,
         title,
@@ -14,7 +17,7 @@ export class ResumesRepository {
   };
 
   findAllResumes = async (whereCondition) => {
-    const resumes = await prisma.resumes.findMany({
+    const resumes = await this.prisma.resumes.findMany({
       where: whereCondition,
       include: {
         user: true,
@@ -25,13 +28,15 @@ export class ResumesRepository {
   };
 
   findResume = async (resumeId) => {
-    const resume = await prisma.resumes.findUnique({ where: { resumeId } });
+    const resume = await this.prisma.resumes.findUnique({
+      where: { resumeId },
+    });
 
     return resume;
   };
 
   updateResume = async ({ resumeId, title, content, status }) => {
-    const updatedResume = await prisma.resumes.update({
+    const updatedResume = await this.prisma.resumes.update({
       where: { resumeId },
       data: { title, content, status },
     });
@@ -39,7 +44,7 @@ export class ResumesRepository {
   };
 
   updateResumeAndLog = async (resume, userId, status, reason) => {
-    const statusLog = await prisma.$transaction(
+    const statusLog = await this.prisma.$transaction(
       //이력서 상태 변경
       async (tx) => {
         await tx.resumes.update({
@@ -67,6 +72,6 @@ export class ResumesRepository {
   };
 
   deleteResume = async (resumeId) => {
-    await prisma.resumes.delete({ where: { resumeId } });
+    await this.prisma.resumes.delete({ where: { resumeId } });
   };
 }

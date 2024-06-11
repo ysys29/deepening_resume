@@ -2,10 +2,11 @@ import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET_KEY } from '../constants/env.constant.js';
 import { HttpError } from '../errors/http.error.js';
 import { UsersRepository } from '../repositories/users.repository.js';
+import { prisma } from '../utils/prisma.utils.js';
 
 export default async function (req, res, next) {
   try {
-    const usersRepository = new UsersRepository();
+    const usersRepository = new UsersRepository(prisma);
     const authorization = req.headers['authorization'];
 
     if (!authorization) {

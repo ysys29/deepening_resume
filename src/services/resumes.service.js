@@ -1,13 +1,14 @@
-import { ResumesRepository } from '../repositories/resumes.repository.js';
-import { ResumeHistoriesRepository } from '../repositories/resumeHistories.repository.js';
 import { HttpError } from '../errors/http.error.js';
 
 export class ResumesService {
-  resumesRepository = new ResumesRepository();
-  resumeHistoriesRepository = new ResumeHistoriesRepository();
+  constructor(resumesRepository, resumeHistoriesRepository) {
+    this.resumesRepository = resumesRepository;
+    this.resumeHistoriesRepository = resumeHistoriesRepository;
+  }
 
   //이력서 생성
   createResume = async (userId, title, content) => {
+    console.log('22222222222222222222');
     const resume = await this.resumesRepository.createResume(
       userId,
       title,

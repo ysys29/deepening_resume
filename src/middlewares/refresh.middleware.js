@@ -7,7 +7,7 @@ import { TokensRepository } from '../repositories/tokens.repository.js';
 
 export default async function (req, res, next) {
   try {
-    const tokensRepository = new TokensRepository();
+    const tokensRepository = new TokensRepository(prisma);
     const authorization = req.headers['authorization'];
     if (!authorization) {
       throw new HttpError.Unauthorized('인증 정보가 없습니다.');

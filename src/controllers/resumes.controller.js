@@ -1,15 +1,16 @@
-import { ResumesService } from '../services/resumes.service.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 
 export class ResumesController {
-  resumesService = new ResumesService();
+  constructor(resumesService) {
+    this.resumesService = resumesService;
+  }
 
   //이력서 생성
   createResume = async (req, res, next) => {
     try {
       const { userId } = req.user;
       const { title, content } = req.body;
-
+      console.log('1111111111111111');
       const resume = await this.resumesService.createResume(
         userId,
         title,

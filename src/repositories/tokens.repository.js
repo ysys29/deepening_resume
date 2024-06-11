@@ -1,8 +1,10 @@
-import { prisma } from '../utils/prisma.utils.js';
-
 export class TokensRepository {
+  constructor(prisma) {
+    this.prisma = prisma;
+  }
+
   findRefreshToken = async (userId) => {
-    const existedRefreshToken = await prisma.refreshTokens.findUnique({
+    const existedRefreshToken = await this.prisma.refreshTokens.findUnique({
       where: { userId },
     });
 
@@ -10,7 +12,7 @@ export class TokensRepository {
   };
 
   upsertRefreshToken = async (userId, hashedRefreshToken) => {
-    await prisma.refreshTokens.upsert({
+    await this.prisma.refreshTokens.upsert({
       where: { userId },
       update: {
         token: hashedRefreshToken,
@@ -23,6 +25,6 @@ export class TokensRepository {
   };
 
   deleteRefreshToken = async (userId) => {
-    await prisma.refreshTokens.delete({ where: { userId } });
+    await this.prisma.refreshTokens.delete({ where: { userId } });
   };
 }

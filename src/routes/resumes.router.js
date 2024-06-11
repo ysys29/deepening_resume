@@ -1,15 +1,24 @@
 import express from 'express';
-import authMiddleware from '../middlewares/auth.middleware.js';
 import { prisma } from '../utils/prisma.utils.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
 import { requireRoles } from '../middlewares/recruiter.middleware.js';
-import { Prisma } from '@prisma/client';
 import { editStatusValidator } from '../middlewares/validators/editStatus-validator.middleware.js';
 import { addResumeValidator } from '../middlewares/validators/addResume-validator.middleware.js';
 import { editResumeValidator } from '../middlewares/validators/editResume-validator.middleware.js';
 import { ResumesController } from '../controllers/resumes.controller.js';
+import { ResumesService } from '../services/resumes.service.js';
+import { ResumesRepository } from '../repositories/resumes.repository.js';
+import { ResumeHistoriesRepository } from '../repositories/resumeHistories.repository.js';
 
 const router = express.Router();
-const resumesController = new ResumesController();
+
+const resumesRepository = new ResumesRepository(prisma);
+const resumeHistoriesRepository = new ResumeHistoriesRepository(prisma);
+const resumesService = new ResumesService(
+  resumesRepository,
+  resumeHistoriesRepository
+);
+const resumesController = new ResumesController(resumesService);
 
 //이력서 생성 api === 리팩토링 완
 router.post(
@@ -45,6 +54,7 @@ router.patch(
   '/resumes/:resumeId/status',
   authMiddleware,
   requireRoles(['RECRUITER']),
+  editStatusValidator,
   resumesController.updateResumeStatus
 );
 

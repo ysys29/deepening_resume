@@ -1,8 +1,9 @@
-import { UsersService } from '../services/users.service.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 
 export class UsersController {
-  usersService = new UsersService();
+  constructor(usersService) {
+    this.usersService = usersService;
+  }
 
   //회원가입 api
   createUser = async (req, res, next) => {

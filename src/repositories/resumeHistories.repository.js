@@ -1,8 +1,10 @@
-import { prisma } from '../utils/prisma.utils.js';
-
 export class ResumeHistoriesRepository {
+  constructor(prisma) {
+    this.prisma = prisma;
+  }
+
   findStatusLogs = async (resumeId) => {
-    const logs = await prisma.resumeHistories.findMany({
+    const logs = await this.prisma.resumeHistories.findMany({
       where: { resumeId },
       include: {
         user: true,
