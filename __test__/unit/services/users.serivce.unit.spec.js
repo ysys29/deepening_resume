@@ -2,7 +2,6 @@ import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import { UsersService } from '../../../src/services/users.service.js';
 import { dummyUsers } from '../../dummies/users.dummy.js';
 import bcrypt from 'bcrypt';
-import { saltHashRound } from '../../../src/constants/hash.constant.js';
 
 const usersRepository = {
   createUser: jest.fn(),
@@ -30,9 +29,6 @@ describe('usersService Unit Test', () => {
     };
 
     const hashedPassword = 'testHashedPassword';
-    // jest.mock("bcyrpt", () => ({
-    //   hash: jest.fn()
-    // }))
     jest
       .spyOn(bcrypt, 'hash')
       .mockImplementation((data, salt) => Promise.resolve(hashedPassword));
@@ -62,10 +58,25 @@ describe('usersService Unit Test', () => {
     );
   });
 
-  test('loginUser Method --로그인', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+  test('loginUser Method --로그인 성공', async () => {
+    // // GIVEN
+    // const loginUserParams = {
+    //   email: dummyUsers[1].email,
+    //   password: dummyUsers[1].password,
+    // };
+    // // const decodedPassword = true;
+    // // jest
+    // //   .spyOn(bcrypt, 'compare')
+    // //   .mockImplementation((password, hashedPassword) => Promise.resolve(false));
+    // // WHEN
+    // await usersService.loginUser(
+    //   loginUserParams.email,
+    //   loginUserParams.password
+    // );
+    // const decodedPassword = true;
+    // // THEN
+    // expect(usersRepository.findUserByEmail).toHaveBeenCalledTimes(1);
+    // expect(usersRepository.findUserByEmail).toHaveBeenCalledWith(email);
   });
 
   test('createAccessAndRefreshToken Method', async () => {

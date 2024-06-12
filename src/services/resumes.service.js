@@ -8,6 +8,7 @@ export class ResumesService {
 
   //이력서 생성
   createResume = async (userId, title, content) => {
+    //이력서 생성 후 생성된 이력서 반환
     const resume = await this.resumesRepository.createResume(
       userId,
       title,
@@ -19,13 +20,17 @@ export class ResumesService {
 
   //모든 이력서 조회
   findAllResumes = async (userId, role, sort, status) => {
+    // 유저의 역할에 따라 where 조건을 줌
     const whereCondition = role === 'RECRUITER' ? {} : { userId };
+    // 쿼리에 입력한 값대로 이력서를 필터링함
     const statusCondition = status ? { status: status.toUpperCase() } : {};
+    // 이력서 찾기
     const resumes = await this.resumesRepository.findAllResumes(
       whereCondition,
       statusCondition
     );
 
+    // 쿼리에 입력한 값대로 정렬
     const sortType = sort ? sort.toLowerCase() : 'desc';
 
     if (sortType === 'desc') {
@@ -34,26 +39,30 @@ export class ResumesService {
       resumes.sort((a, b) => a.createdAt - b.createdAt);
     }
 
-    return resumes.map((resumes) => {
+    // 값을 정리해서 반환
+    return resumes.map((resume) => {
       return {
-        resumeId: resumes.resumeId,
-        name: resumes.user.name,
-        title: resumes.title,
-        content: resumes.content,
-        status: resumes.status,
-        createdAt: resumes.createdAt,
-        updatedAt: resumes.updatedAt,
+        resumeId: resume.resumeId,
+        name: resume.user.name,
+        title: resume.title,
+        content: resume.content,
+        status: resume.status,
+        createdAt: resume.createdAt,
+        updatedAt: resume.updatedAt,
       };
     });
   };
 
   findResume = async (resumeId, userId, role) => {
+    // 이력서 검색
     const resume = await this.resumesRepository.findResume(resumeId);
 
+    // 이력서 없으면 오류
     if (!resume) {
       throw new HttpError.NotFound('이력서가 존재하지 않습니다.');
     }
 
+    // 이력서가 있지만 접근 권한이 없으면 오류
     if (role !== 'RECRUITER' && resume.userId !== userId) {
       throw new HttpError.Forbidden('접근 권한이 없는 이력서입니다.');
     }
@@ -98,7 +107,7 @@ export class ResumesService {
     return statusLog;
   };
 
-  //이력서 상태 수정 로그
+  //이력서 상태 수정 로그 조회
   findStatusLogs = async (resumeId) => {
     const resume = await this.resumesRepository.findResume(resumeId);
 
@@ -111,7 +120,7 @@ export class ResumesService {
     return logs.map((log) => {
       return {
         resumeHistoryId: log.resumeHistoryId,
-        name: log.user.name,
+        name: log.user.name, //채용담당자 이름
         resumeId: log.resumeId,
         oldStatus: log.oldStatus,
         newStatus: log.newStatus,
