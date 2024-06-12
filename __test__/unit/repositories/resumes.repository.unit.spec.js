@@ -91,7 +91,6 @@ describe('resumesRepository Unit Test --이력서 관련 db 조회', () => {
     });
   });
 
-  //이력서 상태 변경 및 로그 기록
   test('updateResumeAndLog Method --이력서의 상태 변경 및 로그 기록', async () => {
     // GIVEN
     const resume = dummyResumes[1];

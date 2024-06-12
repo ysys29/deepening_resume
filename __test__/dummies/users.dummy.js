@@ -6,7 +6,7 @@ export const dummyUsers = [
     name: '스파르탄',
   },
   {
-    id: 1,
+    userId: 1,
     email: 'spartan@spartacodingclub.kr',
     password: '$2b$10$ZU8QqLH0phwjorogYV67jOl6x5l/pm5Oc1QcNzOgz6ADzy7ntQ2FG',
     name: '스파르탄',
