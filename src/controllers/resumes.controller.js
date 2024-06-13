@@ -10,7 +10,6 @@ export class ResumesController {
     try {
       const { userId } = req.user;
       const { title, content } = req.body;
-      console.log('1111111111111111');
       const resume = await this.resumesService.createResume(
         userId,
         title,

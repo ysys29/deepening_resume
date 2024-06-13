@@ -143,7 +143,6 @@ describe('Test resumes.serveice.js', () => {
 
     test('내림차순 정렬', async () => {
       // GIVEN
-      //여기에서 map을 하고 THEN에서는 sort()만 해서 비교하는게 가독성이 낫나..? 조삼모사같기도..
       const mockResumes = [...dummyResumes].splice(1, 4); //얘는 지금 오름차순이니까
       resumesRepository.findAllResumes.mockResolvedValue(mockResumes);
       const mappedResumes = mockResumes.map((mockResume) => {
@@ -185,7 +184,7 @@ describe('Test resumes.serveice.js', () => {
       'INTERVIEW2',
       'FINAL_PASS',
     ];
-    //이렇게 하면 되나..
+    //이러면 스테이터스별로 각각 테스트해줌
     test.each(statuses)('지원 상태 별 필터링', async (status) => {
       // GIVEN
       const mockResumes = [...dummyResumes]
@@ -213,27 +212,6 @@ describe('Test resumes.serveice.js', () => {
 
   //이력서 한개 조회 메서드 테스트
   describe('findResume method', () => {
-    //이력서가 있고 접근권한이 있을 때랑 거의 복붙 같은데 빼야되나...
-    test('이력서 있는지 조회', async () => {
-      // GIVEN
-      const mockUser = dummyUsers[1];
-      const mockResume = dummyResumes[1];
-      resumesRepository.findResume.mockResolvedValue(mockResume);
-
-      // WHEN
-      const resume = await resumesService.findResume(
-        mockResume.resumeId,
-        mockUser.userId,
-        mockUser.role
-      );
-
-      // THEN
-      expect(resumesRepository.findResume).toHaveBeenCalledTimes(1);
-      expect(resumesRepository.findResume).toHaveBeenCalledWith(
-        mockResume.resumeId
-      );
-    });
-
     test('이력서가 존재하지 않을 때 에러', async () => {
       // GIVEN
       //조회된 이력서가 없게 함
