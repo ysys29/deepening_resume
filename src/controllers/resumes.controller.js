@@ -1,4 +1,5 @@
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
+import { HttpError } from '../errors/http.error.js';
 
 export class ResumesController {
   constructor(resumesService) {
@@ -50,6 +51,12 @@ export class ResumesController {
       const { userId, role } = req.user;
       const resumeId = +req.params.resumeId;
 
+      if (isNaN(resumeId)) {
+        throw new HttpError.BadRequest(
+          '입력된 아이디의 형식이 잘못되었습니다.'
+        );
+      }
+
       const resume = await this.resumesService.findResume(
         resumeId,
         userId,
@@ -70,6 +77,12 @@ export class ResumesController {
       const { userId } = req.user;
       const resumeId = +req.params.resumeId;
       const { title, content } = req.body;
+
+      if (isNaN(resumeId)) {
+        throw new HttpError.BadRequest(
+          '입력된 아이디의 형식이 잘못되었습니다.'
+        );
+      }
 
       const updatedResume = await this.resumesService.updateResume(
         userId,
@@ -92,6 +105,12 @@ export class ResumesController {
       const { userId } = req.user;
       const resumeId = +req.params.resumeId;
 
+      if (isNaN(resumeId)) {
+        throw new HttpError.BadRequest(
+          '입력된 아이디의 형식이 잘못되었습니다.'
+        );
+      }
+
       await this.resumesService.deleteResume(userId, resumeId);
 
       return res
@@ -108,6 +127,12 @@ export class ResumesController {
       const { userId } = req.user;
       const resumeId = +req.params.resumeId;
       const { status, reason } = req.body;
+
+      if (isNaN(resumeId)) {
+        throw new HttpError.BadRequest(
+          '입력된 아이디의 형식이 잘못되었습니다.'
+        );
+      }
 
       const data = await this.resumesService.updateResumeStatus(
         userId,
@@ -128,6 +153,12 @@ export class ResumesController {
   checkStatusLogs = async (req, res, next) => {
     try {
       const resumeId = +req.params.resumeId;
+
+      if (isNaN(resumeId)) {
+        throw new HttpError.BadRequest(
+          '입력된 아이디의 형식이 잘못되었습니다.'
+        );
+      }
 
       const logs = await this.resumesService.findStatusLogs(resumeId);
 
