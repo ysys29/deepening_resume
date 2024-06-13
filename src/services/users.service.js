@@ -42,7 +42,7 @@ export class UsersService {
       : null;
 
     if (!user || !decodedPassword) {
-      throw new HttpError.BadRequest('인증 정보가 유효하지 않습니다.');
+      throw new HttpError.Unauthorized('인증 정보가 유효하지 않습니다.');
     }
 
     return user;

@@ -41,7 +41,7 @@ export default function (err, req, res, next) {
   if (err.code === 'P2002') {
     //이메일 중복 에러
     return res
-      .status(HTTP_STATUS.BAD_REQUEST)
+      .status(HTTP_STATUS.CONFLICT)
       .json({ errorMessage: '이미 가입 된 사용자입니다.' });
   }
 
